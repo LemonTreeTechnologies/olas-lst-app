@@ -22,7 +22,7 @@ const MENU_ITEMS = [
 
 export const Header = () => (
   <header className="sticky top-0 z-50 w-full">
-    <nav className="flex justify-between items-center mx-auto max-w-screen-lg gap-x-2 gap-y-4 sm:gap-10 bg-[#FFFFFF0D] bg-opacity-25 px-2 py-1 rounded-2xl border border-[#FFFFFF0D]">
+    <nav className="flex justify-between items-center mx-auto max-w-screen-lg gap-2 bg-[#FFFFFF0D] bg-opacity-25 px-2 py-1 rounded-2xl border border-[#FFFFFF0D]">
       <div className="flex items-center gap-8">
         <Link href="/">
           <Image
