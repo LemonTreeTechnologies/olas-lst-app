@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #FFFFFF;
+}
+
+.main-layout {
+  background-color: #0F1115;
+}
+
+@layer utilities {
+  .font-gradient {
+    @apply bg-gradient-to-b from-white to-[#AFD2E4] bg-clip-text text-transparent;
+  }
+
+  .font-secondary {
+    @apply text-white/50;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Figtree', sans-serif;
+}
