@@ -14,7 +14,7 @@ export const Header = () => (
         />
       </Link>
       <Link href="/stake">
-        <button className="text-white py-2 px-4 bg-[#364DED] rounded-lg cursor-pointer">
+        <button className="text-white font-semibold py-2 px-4 bg-[#364DED] rounded-lg cursor-pointer">
           Launch app
         </button>
       </Link>
