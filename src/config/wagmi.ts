@@ -31,3 +31,5 @@ export const wagmiAdapter = new WagmiAdapter({
 });
 
 export const config = wagmiAdapter.wagmiConfig;
+
+export const DEFAULT_CHAIN_ID = sepolia.id;

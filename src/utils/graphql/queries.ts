@@ -9,13 +9,15 @@ const getStakingModelsQuery = gql`
       id
       chainId
       stakingProxy
-      stakeLimitPerSlot
       numSlots
-      status
-      blockNumber
-      blockTimestamp
-      transactionHash
+      usedSlots
+      availableSlots
+      stakeLimitPerSlot
       stAmount
+      supply
+      reminder
+      reminderPerSlot
+      status
     }
   }
 `;

@@ -1,14 +1,13 @@
 import { useAccount, useReadContract } from "wagmi";
 import { erc20Abi, formatUnits } from "viem";
-import { useChainId } from "@/hooks/useChainId";
 import { formatNumber } from "@/utils/format";
+import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 
 export const useFetchBalance = (
   tokenAddress?: `0x${string}`,
   decimals = 18,
 ) => {
   const { address } = useAccount();
-  const chainId = useChainId();
 
   const {
     data: balance,
@@ -19,7 +18,7 @@ export const useFetchBalance = (
     abi: erc20Abi,
     functionName: "balanceOf",
     args: [address!],
-    chainId,
+    chainId: DEFAULT_CHAIN_ID,
     query: {
       enabled: !!address && !!tokenAddress,
     },
