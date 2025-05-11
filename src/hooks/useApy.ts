@@ -1,19 +1,14 @@
 import { useReadContracts } from "wagmi";
 import { STAKING_TOKEN_LOCKED_ABI } from "@/constants/contracts/stakingTokenLocked";
-import { useChainId } from "@/hooks/useChainId";
 import { formatNumber } from "@/utils/format";
-import { useActiveModels } from "./useActiveModels";
+import { useFetchActiveModels } from "./useFetchActiveModels";
 import { ST_OLAS_ABI, ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
+import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 
 const PROD_TO_TESTNET_CHAIN_IDS: Record<string, number> = {
   "8453": 84532,
   "100": 1020,
 };
-
-const STAKING_CONTRACTS_FUNCTIONS = [
-  "getServiceIds",
-  "rewardsPerSecond",
-] as const;
 
 const ST_OLAS_FUNCTIONS = ["stakedBalance", "reserveBalance"] as const;
 
@@ -24,17 +19,15 @@ export const useApy = () => {
    * Get active staking contracts
    */
   const { data: stakingContracts, isLoading: isContractsLoading } =
-    useActiveModels();
+    useFetchActiveModels();
 
   const contracts = stakingContracts
-    ? STAKING_CONTRACTS_FUNCTIONS.flatMap((functionName) =>
-        stakingContracts.stakingModels.map((contract) => ({
-          address: contract.stakingProxy,
-          abi: STAKING_TOKEN_LOCKED_ABI,
-          chainId: PROD_TO_TESTNET_CHAIN_IDS[contract.chainId],
-          functionName,
-        })),
-      )
+    ? stakingContracts.stakingModels.map((contract) => ({
+        address: contract.stakingProxy,
+        abi: STAKING_TOKEN_LOCKED_ABI,
+        chainId: PROD_TO_TESTNET_CHAIN_IDS[contract.chainId],
+        functionName: "rewardsPerSecond",
+      }))
     : [];
 
   const {
@@ -49,16 +42,15 @@ export const useApy = () => {
   /**
    * Get stakedBalance and reserveBalance of stOLAS
    */
-  const chainId = useChainId();
   const {
     data: stOlasTotalStakeAssets,
     isLoading: isStOlasTotalStakeAssetsLoading,
     error: stOlasTotalStakeAssetsError,
   } = useReadContracts({
     contracts: ST_OLAS_FUNCTIONS.map((functionName) => ({
-      address: ST_OLAS_ADDRESSES[chainId],
+      address: ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
       abi: ST_OLAS_ABI,
-      chainId,
+      chainId: DEFAULT_CHAIN_ID,
       functionName,
     })),
   });
@@ -95,22 +87,17 @@ export const useApy = () => {
    * Calculate APY for each contract
    */
   const apys = stakingContracts.stakingModels.map((contract, index) => {
-    const serviceIdsResult = contractsDetails[index];
-    const rewardsResult =
-      contractsDetails[index + stakingContracts.stakingModels.length];
+    const rewardsResult = contractsDetails[index];
 
-    if (
-      serviceIdsResult?.status !== "success" ||
-      rewardsResult?.status !== "success"
-    ) {
+    if (rewardsResult?.status !== "success") {
       return 0;
     }
 
-    const serviceIds = serviceIdsResult.result as bigint[];
+    const usedSlots = contract.usedSlots;
     const rewardsPerSecond = rewardsResult.result as bigint;
 
     const numerator =
-      BigInt(serviceIds.length) * rewardsPerSecond * BigInt(SECONDS_IN_YEAR);
+      BigInt(usedSlots) * rewardsPerSecond * BigInt(SECONDS_IN_YEAR);
     const apy = Number(numerator) / Number(totalStakeAssets);
 
     return apy;
