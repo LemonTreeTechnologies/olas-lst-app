@@ -1,7 +1,20 @@
+"use client";
+
 import Head from "next/head";
 import { LaunchLayout } from "@/components/layouts/LaunchLayout";
+import { useStTotalAssets } from "@/hooks/useStTotalAssets";
+import { useApy } from "@/hooks/useApy";
+
+const StatisticSkeleton = () => (
+  <div role="status" className="max-w-sm animate-pulse">
+    <div className="h-10 bg-white/15 rounded-lg w-36"></div>
+  </div>
+);
 
 export default function Home() {
+  const { formattedStTotalAssets, isLoading: isStTotalAssetsLoading } =
+    useStTotalAssets();
+  const { apy, isLoading: isApyLoading } = useApy();
   return (
     <>
       <Head>
@@ -25,13 +38,19 @@ export default function Home() {
           <div className="flex gap-12">
             <div className="flex flex-col gap-1 text-center">
               <span className="font-gradient text-4xl font-semibold">
-                $10,000,000
+                {isStTotalAssetsLoading ? (
+                  <StatisticSkeleton />
+                ) : (
+                  formattedStTotalAssets
+                )}
               </span>
-              <span className="font-secondary">TVL</span>
+              <span className="font-secondary">TVL (OLAS)</span>
             </div>
 
             <div className="flex flex-col gap-1 text-center">
-              <span className="font-gradient text-4xl font-semibold">130%</span>
+              <span className="font-gradient text-4xl font-semibold">
+                {isApyLoading ? <StatisticSkeleton /> : `${apy}%`}
+              </span>
               <span className="font-secondary">APY</span>
             </div>
           </div>

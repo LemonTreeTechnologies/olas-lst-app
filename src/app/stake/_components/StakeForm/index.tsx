@@ -4,14 +4,16 @@ import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { TokenInput } from "@/components/TokenInput";
-import { OLAS_ADDRESS } from "@/constants";
+import { OLAS_ADDRESSES } from "@/constants/contracts/olas";
 import { useFetchBalance } from "@/hooks/useFetchBalance";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
 export const StakeForm = () => {
-  const { isConnected: isAccountConnected } = useAccount();
-  const { formattedBalance } = useFetchBalance(OLAS_ADDRESS);
+  const { isConnected: isAccountConnected, chainId } = useAccount();
+  const { formattedBalance } = useFetchBalance(
+    chainId ? OLAS_ADDRESSES[chainId] : undefined,
+  );
 
   const [value, setValue] = useState("");
 

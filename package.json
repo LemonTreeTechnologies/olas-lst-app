@@ -9,17 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@reown/appkit": "^1.7.2",
-    "@reown/appkit-adapter-wagmi": "^1.7.2",
+    "@reown/appkit": "^1.7.4",
+    "@reown/appkit-adapter-wagmi": "^1.7.4",
     "@tanstack/react-query": "^5.71.10",
-    "@wagmi/core": "^2.16.7",
+    "@wagmi/core": "^2.17.1",
     "eslint-config-prettier": "^10.1.1",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.1.2",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "viem": "^2.25.0",
-    "wagmi": "^2.14.16"
+    "viem": "^2.29.1",
+    "wagmi": "^2.15.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

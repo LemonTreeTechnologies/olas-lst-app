@@ -3,7 +3,7 @@ import { erc20Abi, formatUnits } from "viem";
 import { useChainId } from "@/hooks/useChainId";
 import { formatNumber } from "@/utils/format";
 
-export const useFetchBalance = (
+export const useFetchActiveModels = (
   tokenAddress?: `0x${string}`,
   decimals = 18,
 ) => {
