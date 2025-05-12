@@ -3,18 +3,13 @@
 import Head from "next/head";
 import { LaunchLayout } from "@/components/layouts/LaunchLayout";
 import { useStTotalAssets } from "@/hooks/useStTotalAssets";
-import { useApy } from "@/hooks/useApy";
-
-const StatisticSkeleton = () => (
-  <div role="status" className="max-w-sm animate-pulse">
-    <div className="h-10 bg-white/15 rounded-lg w-36"></div>
-  </div>
-);
+import { useCurrentApy } from "@/hooks/useApy";
+import { StatisticSkeleton } from "@/components/loaders/Skeleton";
 
 export default function Home() {
   const { formattedStTotalAssets, isLoading: isStTotalAssetsLoading } =
     useStTotalAssets();
-  const { apy, isLoading: isApyLoading } = useApy();
+  const { apy, isLoading: isApyLoading } = useCurrentApy();
   return (
     <>
       <Head>
