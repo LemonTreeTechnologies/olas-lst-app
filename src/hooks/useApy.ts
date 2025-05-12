@@ -2,33 +2,27 @@ import { useReadContracts } from "wagmi";
 import { STAKING_TOKEN_LOCKED_ABI } from "@/constants/contracts/stakingTokenLocked";
 import { formatNumber } from "@/utils/format";
 import { useFetchActiveModels } from "./useFetchActiveModels";
-import { ST_OLAS_ABI, ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
-import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
+import { SECONDS_IN_YEAR } from "@/constants";
+import { useStTotalStakedAssets } from "./useStTotalStakedAssets";
+import { StakingModel } from "@/utils/graphql/types";
 
 const PROD_TO_TESTNET_CHAIN_IDS: Record<string, number> = {
   "8453": 84532,
   "100": 1020,
 };
 
-const ST_OLAS_FUNCTIONS = ["stakedBalance", "reserveBalance"] as const;
-
-const SECONDS_IN_YEAR = 365 * 24 * 60 * 60;
-
-export const useApy = () => {
-  /**
-   * Get active staking contracts
-   */
-  const { data: stakingContracts, isLoading: isContractsLoading } =
-    useFetchActiveModels();
-
-  const contracts = stakingContracts
-    ? stakingContracts.stakingModels.map((contract) => ({
-        address: contract.stakingProxy,
-        abi: STAKING_TOKEN_LOCKED_ABI,
-        chainId: PROD_TO_TESTNET_CHAIN_IDS[contract.chainId],
-        functionName: "rewardsPerSecond",
-      }))
-    : [];
+const useApy = (
+  stakingContracts: (
+    | StakingModel
+    | Pick<StakingModel, "chainId" | "stakingProxy" | "usedSlots">
+  )[],
+) => {
+  const contracts = stakingContracts.map((contract) => ({
+    address: contract.stakingProxy,
+    abi: STAKING_TOKEN_LOCKED_ABI,
+    chainId: PROD_TO_TESTNET_CHAIN_IDS[contract.chainId],
+    functionName: "rewardsPerSecond",
+  }));
 
   const {
     data: contractsDetails,
@@ -40,33 +34,21 @@ export const useApy = () => {
   });
 
   /**
-   * Get stakedBalance and reserveBalance of stOLAS
+   * Get totalStakeAssets
    */
   const {
-    data: stOlasTotalStakeAssets,
+    totalStakeAssets,
     isLoading: isStOlasTotalStakeAssetsLoading,
     error: stOlasTotalStakeAssetsError,
-  } = useReadContracts({
-    contracts: ST_OLAS_FUNCTIONS.map((functionName) => ({
-      address: ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
-      abi: ST_OLAS_ABI,
-      chainId: DEFAULT_CHAIN_ID,
-      functionName,
-    })),
-  });
+  } = useStTotalStakedAssets();
 
-  /**
-   * Loading state for all fetched data
-   */
-  const isLoading =
-    isContractsLoading ||
-    isContractsDataLoading ||
-    isStOlasTotalStakeAssetsLoading;
+  // Loading state for all fetched data
+  const isLoading = isContractsDataLoading || isStOlasTotalStakeAssetsLoading;
 
   /**
    * If some data not yet loaded - return a placeholder
    */
-  if (!contractsDetails || !stOlasTotalStakeAssets || !stakingContracts) {
+  if (!contractsDetails || !totalStakeAssets || !stakingContracts) {
     return {
       apy: "0",
       isLoading,
@@ -75,18 +57,9 @@ export const useApy = () => {
   }
 
   /**
-   * Calculate total stake assets (stakedBalance + reserveBalance)
-   */
-  const [stakedBalance, reserveBalance] = stOlasTotalStakeAssets.map(
-    (result) =>
-      (result?.status === "success" ? result.result : BigInt(0)) as bigint,
-  );
-  const totalStakeAssets = stakedBalance + reserveBalance;
-
-  /**
    * Calculate APY for each contract
    */
-  const apys = stakingContracts.stakingModels.map((contract, index) => {
+  const apys = stakingContracts.map((contract, index) => {
     const rewardsResult = contractsDetails[index];
 
     if (rewardsResult?.status !== "success") {
@@ -116,7 +89,55 @@ export const useApy = () => {
   };
 };
 
-// TBD
-export const useProjectedApy = () => {
-  return null;
+export const useCurrentApy = () => {
+  // Get active staking contracts
+  const { data: stakingContracts, isLoading: isContractsLoading } =
+    useFetchActiveModels({});
+
+  const {
+    apy,
+    isLoading: isApyLoading,
+    error,
+  } = useApy(stakingContracts ? stakingContracts.stakingModels : []);
+
+  return {
+    apy,
+    isLoading: isContractsLoading || isApyLoading,
+    error,
+  };
+};
+
+export const useProjectedApy = (
+  contractsForDeposit: {
+    chainId: StakingModel["chainId"];
+    stakingProxy: StakingModel["stakingProxy"];
+    allocation: bigint;
+  }[],
+) => {
+  const stakingContracts: Pick<
+    StakingModel,
+    "chainId" | "stakingProxy" | "usedSlots"
+  >[] = [];
+
+  contractsForDeposit.forEach((contractForDeposit) => {
+    const contractIndex = stakingContracts.findIndex(
+      (stakingContract) =>
+        stakingContract.chainId === contractForDeposit.chainId &&
+        stakingContract.stakingProxy === contractForDeposit.stakingProxy,
+    );
+
+    if (contractIndex === -1) {
+      stakingContracts.push({
+        chainId: contractForDeposit.chainId,
+        stakingProxy: contractForDeposit.stakingProxy,
+        // TODO: fix type as it's weird
+        usedSlots: "1",
+      });
+    } else {
+      stakingContracts[contractIndex].usedSlots =
+        `${Number(stakingContracts[contractIndex].usedSlots) + 1}`;
+    }
+  });
+
+  return useApy(stakingContracts);
 };

@@ -1,6 +1,6 @@
 type Item = {
   label: string;
-  value: string;
+  value: string | React.ReactElement;
 };
 
 type KeyValueListProps = {
