@@ -3,13 +3,13 @@
 import Head from "next/head";
 import { LaunchLayout } from "@/components/layouts/LaunchLayout";
 import { useStTotalAssets } from "@/hooks/useStTotalAssets";
-import { useCurrentApy } from "@/hooks/useApy";
+import { useCurrentApr } from "@/hooks/useApr";
 import { StatisticSkeleton } from "@/components/loaders/Skeleton";
 
 export default function Home() {
   const { formattedStTotalAssets, isLoading: isStTotalAssetsLoading } =
     useStTotalAssets();
-  const { apy, isLoading: isApyLoading } = useCurrentApy();
+  const { apr, isLoading: isAprLoading } = useCurrentApr();
   return (
     <>
       <Head>
@@ -44,9 +44,9 @@ export default function Home() {
 
             <div className="flex flex-col gap-1 text-center">
               <span className="font-gradient text-4xl font-semibold">
-                {isApyLoading ? <StatisticSkeleton /> : `${apy}%`}
+                {isAprLoading ? <StatisticSkeleton /> : `${apr}%`}
               </span>
-              <span className="font-secondary">APY</span>
+              <span className="font-secondary">APR</span>
             </div>
           </div>
         </div>

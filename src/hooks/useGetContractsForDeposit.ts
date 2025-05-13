@@ -28,7 +28,7 @@ export const useGetContractsForDeposit = (amount: bigint) => {
         orderBy: "reminderPerSlot",
         orderDirection: "asc",
       },
-      amount > 0,
+      amount > BigInt(0),
     );
 
   if (!stakingContracts || isContractsLoading) {

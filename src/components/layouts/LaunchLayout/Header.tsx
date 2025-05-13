@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,9 +15,7 @@ export const Header = () => (
         />
       </Link>
       <Link href="/stake">
-        <button className="text-white font-semibold py-2 px-4 bg-[#364DED] rounded-lg cursor-pointer">
-          Launch app
-        </button>
+        <Button>Launch app</Button>
       </Link>
     </nav>
   </header>
