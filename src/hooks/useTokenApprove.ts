@@ -82,6 +82,7 @@ export const useTokenApprove = ({
           setIsApprovalSuccessOrNotNeeded(true);
           console.log("Sufficient allowance already granted.");
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error("Error during approval process:", error);
         setApproveError(error);
