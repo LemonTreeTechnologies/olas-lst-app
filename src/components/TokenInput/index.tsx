@@ -64,8 +64,6 @@ export const TokenInput: FC<TokenInputProps> = ({
                     rawBalanceInEth < BigInt(parsedValue)
                       ? rawBalanceInEth.toString()
                       : Math.max(0, parsedValue).toString();
-
-                  console.log("???", newValue);
                 }
 
                 onChange(newValue); // Update with the clamped value as a string
