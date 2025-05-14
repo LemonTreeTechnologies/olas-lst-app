@@ -1,8 +1,8 @@
 "use client";
 
-import { Address, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { useState } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
@@ -16,12 +16,8 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
 import { formatNumber } from "@/utils/format";
 import { Button } from "@/components/Button";
-import {
-  DEPOSITORY_ABI,
-  DEPOSITORY_ADDRESSES,
-} from "@/constants/contracts/depository";
-import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import { LuArrowUpRight } from "react-icons/lu";
+import { useStake } from "./hooks";
 
 const getStakeValueContent = ({
   amount,
@@ -40,8 +36,6 @@ const getStakeValueContent = ({
 };
 
 export const StakeForm = () => {
-  const { data: hash, isPending, writeContract, reset } = useWriteContract();
-
   const { isConnected: isAccountConnected, chainId } = useAccount();
   const { formattedBalance, rawBalance } = useFetchBalance(
     chainId ? OLAS_ADDRESSES[chainId] : undefined,
@@ -64,35 +58,18 @@ export const StakeForm = () => {
     isLoading: isPreviewDepositLoading,
   } = usePreviewDeposit(amountInWei);
 
-  const handleSendTransaction = () => {
-    if (isPending) return;
-    reset();
+  const {
+    handleStake,
+    isLoading: isStakeLoading,
+    isApproveLoading,
+    isDepositLoading,
+    isApprovalSuccessOrNotNeeded,
+    approveHash,
+    depositHash,
+    error,
+  } = useStake(contracts, amountInWei);
 
-    const chainIds: bigint[] = [];
-    const stakingProxies: Address[] = [];
-    const bridgePayloads: `0x${string}`[] = [];
-    const values: bigint[] = [];
-
-    contracts.forEach((contract) => {
-      chainIds.push(BigInt(contract.chainId));
-      stakingProxies.push(contract.stakingProxy);
-      bridgePayloads.push("0x");
-      values.push(contract.allocation);
-    });
-
-    writeContract({
-      address: DEPOSITORY_ADDRESSES[DEFAULT_CHAIN_ID],
-      abi: DEPOSITORY_ABI,
-      functionName: "deposit",
-      args: [
-        BigInt(amountInWei),
-        chainIds,
-        stakingProxies,
-        bridgePayloads,
-        values,
-      ],
-    });
-  };
+  console.log("error", error);
 
   return (
     <Card title="Stake OLAS">
@@ -114,7 +91,7 @@ export const StakeForm = () => {
                 isContractsLoading ||
                 isAprLoading ||
                 debouncedAmount !== amount,
-              content: apr,
+              content: `${apr}%`,
             }),
           },
           {
@@ -150,29 +127,75 @@ export const StakeForm = () => {
         </div>
       ) : (
         <>
-          {hash && (
-            <span className="text-center">
-              Successfully deposited!{" "}
-              <a
-                href={`https://sepolia.etherscan.io/tx/${hash}`}
-                target="_blank"
-                className="inline-flex items-center gap-1 text-blue-400"
-              >
-                Txn details <LuArrowUpRight />
-              </a>
-            </span>
+          {(isStakeLoading || approveHash || depositHash || error) && (
+            <div
+              className="bg-white/5 border-2 border-dashed border-[#364DED]/50 text-white/80 px-4 py-3 rounded-lg"
+              role="alert"
+            >
+              {isApproveLoading && !approveHash && (
+                <div className="loading-ellipses">
+                  Checking allowance and approve if needed
+                </div>
+              )}
+
+              {approveHash && (
+                <>
+                  <div>
+                    Token transfer approved!{" "}
+                    <a
+                      href={`https://sepolia.etherscan.io/tx/${approveHash}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1 text-blue-400"
+                    >
+                      Txn details <LuArrowUpRight />
+                    </a>
+                  </div>
+                  {!isApprovalSuccessOrNotNeeded && (
+                    <div className="loading-ellipses">
+                      Waiting for txn receipt
+                    </div>
+                  )}
+                </>
+              )}
+
+              {isDepositLoading && !depositHash && (
+                <div className="loading-ellipses">
+                  Waiting for deposit approval
+                </div>
+              )}
+
+              {depositHash && (
+                <div>
+                  Deposit approved!{" "}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${depositHash}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-1 text-blue-400"
+                  >
+                    Txn details <LuArrowUpRight />
+                  </a>
+                </div>
+              )}
+
+              {error && (
+                <div className="text-fuchsia-400">
+                  Some error occurred. Please try later
+                </div>
+              )}
+            </div>
           )}
           <div className="flex flex-auto">
             <Button
               className="w-full"
-              onClick={handleSendTransaction}
-              isLoading={isPending}
+              onClick={handleStake}
+              isLoading={isStakeLoading}
               disabled={
                 isPreviewDepositLoading ||
                 isContractsLoading ||
                 isAprLoading ||
                 !amountInWei ||
-                debouncedAmount !== amount
+                debouncedAmount !== amount ||
+                isStakeLoading
               }
             >
               Stake
