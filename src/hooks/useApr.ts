@@ -112,7 +112,7 @@ export const useCurrentApr = () => {
 const getUsedSlots = (contract: StakingModel | ContractForDeposit) => {
   return "usedSlots" in contract
     ? Number(contract.usedSlots)
-    : contract.allocation < BigInt(contract.stakeLimitPerSlot)
+    : contract.allocation < BigInt(contract.reminderPerSlot)
       ? 0
       : 1;
 };
@@ -157,6 +157,8 @@ export const useProjectedApr = (
         }
       },
     );
+
+    console.log("result", result, "contractsForDeposit", contractsForDeposit);
 
     return result;
   }, [contractsForDeposit, stakingContracts, isContractsLoading]);

@@ -69,8 +69,6 @@ export const StakeForm = () => {
     error,
   } = useStake(contracts, amountInWei);
 
-  console.log("error", error);
-
   return (
     <Card title="Stake OLAS">
       <TokenInput

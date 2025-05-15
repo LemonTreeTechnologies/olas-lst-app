@@ -13,7 +13,7 @@ const getContractWithStakeAmount = (
   return {
     chainId: contract.chainId,
     stakingProxy: contract.stakingProxy,
-    stakeLimitPerSlot: contract.stakeLimitPerSlot,
+    reminderPerSlot: contract.reminderPerSlot,
     allocation,
   };
 };
@@ -46,7 +46,7 @@ export const useGetContractsForDeposit = (amount: bigint) => {
   const contractsForDeposit: Array<{
     chainId: StakingModel["chainId"];
     stakingProxy: StakingModel["stakingProxy"];
-    stakeLimitPerSlot: StakingModel["stakeLimitPerSlot"];
+    reminderPerSlot: StakingModel["reminderPerSlot"];
     allocation: bigint;
   }> = [];
 
