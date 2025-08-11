@@ -7,7 +7,7 @@ import React, { type ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 
 // Set up queryClient
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 // Set up metadata
 const metadata = {

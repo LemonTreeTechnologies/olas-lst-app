@@ -158,8 +158,6 @@ export const useProjectedApr = (
       },
     );
 
-    console.log("result", result, "contractsForDeposit", contractsForDeposit);
-
     return result;
   }, [contractsForDeposit, stakingContracts, isContractsLoading]);
 

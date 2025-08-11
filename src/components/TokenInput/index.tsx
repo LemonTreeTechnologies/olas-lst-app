@@ -3,8 +3,8 @@ import { FC } from "react";
 import { LuWallet } from "react-icons/lu";
 import { Button } from "../Button";
 import { formatUnits } from "viem";
-
-type TokenType = "OLAS" | "stOLAS";
+import { TokenType } from "@/types";
+import { TOKEN_LOGOS } from "@/constants";
 
 interface TokenInputProps {
   value: string;
@@ -35,9 +35,8 @@ export const TokenInput: FC<TokenInputProps> = ({
       </div>
 
       <div className="flex items-center bg-[#FFFFFF0D] border border-white/10 rounded-xl p-3 gap-2">
-        {/* Todo — replace with dynamic logo */}
         <Image
-          src="/images/olas-icon.svg"
+          src={TOKEN_LOGOS[token]}
           alt={`${token} logo`}
           width="24"
           height="24"
@@ -61,7 +60,7 @@ export const TokenInput: FC<TokenInputProps> = ({
                 // Enforce limits only if rawBalance is defined and not NaN
                 if (rawBalanceInEth) {
                   newValue =
-                    rawBalanceInEth < BigInt(parsedValue)
+                    rawBalanceInEth < parsedValue
                       ? rawBalanceInEth.toString()
                       : Math.max(0, parsedValue).toString();
                 }

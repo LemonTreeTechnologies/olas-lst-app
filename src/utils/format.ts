@@ -18,3 +18,6 @@ export const formatNumber = (
     minimumFractionDigits,
   }).format(value);
 };
+
+export const truncateAddress = (address: `0x${string}` | undefined) =>
+  address ? `${address.slice(0, 6)}...${address.slice(-6)}` : "--";

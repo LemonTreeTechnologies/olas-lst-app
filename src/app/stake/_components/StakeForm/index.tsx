@@ -1,23 +1,24 @@
 "use client";
 
 import { parseUnits } from "viem";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
-import { OLAS_ADDRESSES } from "@/constants/contracts/olas";
 import { useProjectedApr } from "@/hooks/useApr";
-import { useFetchBalance } from "@/hooks/useFetchBalance";
+import { useOlasBalances } from "@/hooks/useFetchBalance";
 import { useGetContractsForDeposit } from "@/hooks/useGetContractsForDeposit";
 import { useDebounce } from "@uidotdev/usehooks";
 import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
 import { formatNumber } from "@/utils/format";
 import { Button } from "@/components/Button";
-import { LuArrowUpRight } from "react-icons/lu";
 import { useStake } from "./hooks";
+import { queryClient } from "@/context/ReownAppKitProvider";
+import { SCOPE_KEYS } from "@/constants/scopeKeys";
+import { Status } from "./Status";
 
 const getStakeValueContent = ({
   amount,
@@ -36,10 +37,10 @@ const getStakeValueContent = ({
 };
 
 export const StakeForm = () => {
-  const { isConnected: isAccountConnected, chainId } = useAccount();
-  const { formattedBalance, rawBalance } = useFetchBalance(
-    chainId ? OLAS_ADDRESSES[chainId] : undefined,
-  );
+  const { isConnected: isAccountConnected, chainId, address } = useAccount();
+
+  const { availableOlasBalance, availableOlasFormattedBalance } =
+    useOlasBalances(address, chainId);
 
   const [amount, setAmount] = useState("");
   const debouncedAmount = useDebounce(amount, 500);
@@ -58,16 +59,18 @@ export const StakeForm = () => {
     isLoading: isPreviewDepositLoading,
   } = usePreviewDeposit(amountInWei);
 
-  const {
-    handleStake,
-    isLoading: isStakeLoading,
-    isApproveLoading,
-    isDepositLoading,
-    isApprovalSuccessOrNotNeeded,
-    approveHash,
-    depositHash,
-    error,
-  } = useStake(contracts, amountInWei);
+  const handleFinish = useCallback(() => {
+    queryClient.removeQueries({
+      predicate: (query) =>
+        SCOPE_KEYS.stOlas(address, chainId) ===
+        (query.queryKey[1] as Record<string, string>)?.scopeKey,
+    });
+
+    setAmount("");
+  }, [address, chainId]);
+
+  const { handleStake, status, isBusy, approveHash, depositHash, error } =
+    useStake(contracts, amountInWei, handleFinish);
 
   return (
     <Card title="Stake OLAS">
@@ -75,8 +78,8 @@ export const StakeForm = () => {
         value={amount}
         onChange={setAmount}
         token="OLAS"
-        balance={formattedBalance}
-        rawBalance={rawBalance}
+        balance={availableOlasFormattedBalance}
+        rawBalance={availableOlasBalance}
       />
       <KeyValueList
         items={[
@@ -125,75 +128,26 @@ export const StakeForm = () => {
         </div>
       ) : (
         <>
-          {(isStakeLoading || approveHash || depositHash || error) && (
-            <div
-              className="bg-white/5 border-2 border-dashed border-[#364DED]/50 text-white/80 px-4 py-3 rounded-lg"
-              role="alert"
-            >
-              {isApproveLoading && !approveHash && (
-                <div className="loading-ellipses">
-                  Checking allowance and approve if needed
-                </div>
-              )}
+          <Status
+            status={status}
+            chainId={chainId}
+            approveHash={approveHash}
+            depositHash={depositHash}
+            error={error}
+          />
 
-              {approveHash && (
-                <>
-                  <div>
-                    Token transfer approved!{" "}
-                    <a
-                      href={`https://sepolia.etherscan.io/tx/${approveHash}`}
-                      target="_blank"
-                      className="inline-flex items-center gap-1 text-blue-400"
-                    >
-                      Txn details <LuArrowUpRight />
-                    </a>
-                  </div>
-                  {!isApprovalSuccessOrNotNeeded && (
-                    <div className="loading-ellipses">
-                      Waiting for txn receipt
-                    </div>
-                  )}
-                </>
-              )}
-
-              {isDepositLoading && !depositHash && (
-                <div className="loading-ellipses">
-                  Waiting for deposit approval
-                </div>
-              )}
-
-              {depositHash && (
-                <div>
-                  Deposit approved!{" "}
-                  <a
-                    href={`https://sepolia.etherscan.io/tx/${depositHash}`}
-                    target="_blank"
-                    className="inline-flex items-center gap-1 text-blue-400"
-                  >
-                    Txn details <LuArrowUpRight />
-                  </a>
-                </div>
-              )}
-
-              {error && (
-                <div className="text-fuchsia-400">
-                  Some error occurred. Please try later
-                </div>
-              )}
-            </div>
-          )}
           <div className="flex flex-auto">
             <Button
               className="w-full"
               onClick={handleStake}
-              isLoading={isStakeLoading}
+              isLoading={isBusy}
               disabled={
                 isPreviewDepositLoading ||
                 isContractsLoading ||
                 isAprLoading ||
                 !amountInWei ||
                 debouncedAmount !== amount ||
-                isStakeLoading
+                isBusy
               }
             >
               Stake

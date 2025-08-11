@@ -9,10 +9,14 @@ import {
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import { useTokenApprove } from "@/hooks/useTokenApprove";
 import { ContractForDeposit } from "@/types";
+import { StakeStatus } from "./types";
 
-export const useStake = (contracts: ContractForDeposit[], amount: bigint) => {
+export const useStake = (
+  contracts: ContractForDeposit[],
+  amount: bigint,
+  onFinish: () => void,
+) => {
   const [isStakeLoading, setIsStakeLoading] = useState(false);
-
   const [isDepositStarted, setIsDepositStarted] = useState(false);
 
   // check allowance and approve
@@ -53,6 +57,7 @@ export const useStake = (contracts: ContractForDeposit[], amount: bigint) => {
   useEffect(() => {
     if (isStakeLoading && isApprovalSuccessOrNotNeeded && !isDepositStarted) {
       setIsDepositStarted(true);
+
       const chainIds: bigint[] = [];
       const stakingProxies: Address[] = [];
       const bridgePayloads: `0x${string}`[] = [];
@@ -93,17 +98,42 @@ export const useStake = (contracts: ContractForDeposit[], amount: bigint) => {
     if (isStakeLoading && isDepositStarted && !isDepositLoading) {
       setIsStakeLoading(false);
       setIsDepositStarted(false);
+
+      if (depositHash) {
+        onFinish();
+      }
     }
-  }, [isStakeLoading, isDepositStarted, isDepositLoading]);
+  }, [
+    isStakeLoading,
+    isDepositStarted,
+    isDepositLoading,
+    depositHash,
+    onFinish,
+  ]);
+
+  const baseError = approveError || depositError;
+
+  const status: StakeStatus = baseError
+    ? "error"
+    : isStakeLoading && isLoading && !approveHash
+      ? "approving"
+      : isStakeLoading && approveHash && !isApprovalSuccessOrNotNeeded
+        ? "approved"
+        : isStakeLoading && isDepositLoading && !depositHash
+          ? "depositing"
+          : depositHash
+            ? "deposited"
+            : "idle";
+
+  const isBusy =
+    status === "approving" || status === "approved" || status === "depositing";
 
   return {
     handleStake,
-    isLoading: isStakeLoading || isDepositLoading,
-    isApproveLoading: isLoading,
-    isDepositLoading,
-    isApprovalSuccessOrNotNeeded,
+    status,
+    isBusy,
     approveHash,
     depositHash,
-    error: approveError || depositError,
+    error: baseError,
   };
 };
