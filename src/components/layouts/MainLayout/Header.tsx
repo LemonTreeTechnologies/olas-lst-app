@@ -21,8 +21,8 @@ const MENU_ITEMS = [
 ];
 
 export const Header = () => (
-  <header className="sticky top-0 z-50 w-full">
-    <nav className="flex justify-between items-center mx-auto max-w-screen-lg gap-2 bg-[#FFFFFF0D] bg-opacity-25 px-2 py-1 rounded-2xl border border-[#FFFFFF0D]">
+  <header className="max-w-screen-lg w-full sticky top-0 z-50 backdrop-blur-sm bg-[#FFFFFF0D] bg-opacity-25 rounded-2xl overflow-hidden border border-[#FFFFFF0D]">
+    <nav className="flex justify-between items-center mx-auto gap-2 px-2 py-1">
       <div className="flex items-center gap-8">
         <Link href="/">
           <Image

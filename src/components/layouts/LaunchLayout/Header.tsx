@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const Header = () => (
-  <header className="sticky top-0 z-50 w-2xl">
-    <nav className="flex justify-between items-center mx-auto max-w-screen-lg gap-2 backdrop-blur-sm bg-[#FFFFFF14] bg-opacity-25 px-2 py-1 rounded-2xl border border-[#FFFFFF1F]">
+  <header className="max-w-2xl w-full sticky top-0 z-50 backdrop-blur-sm bg-[#FFFFFF14] bg-opacity-25 rounded-2xl overflow-hidden border border-[#FFFFFF0D]">
+    <nav className="flex justify-between items-center mx-auto gap-2 px-2 py-1">
       <Link href="/" className="justify-self-start col-span-2">
         <Image
           src="/images/stOLAS-logo.svg"

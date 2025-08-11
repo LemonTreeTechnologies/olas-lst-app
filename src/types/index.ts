@@ -6,3 +6,5 @@ export type ContractForDeposit = Pick<
 > & {
   allocation: bigint;
 };
+
+export type TokenType = "OLAS" | "stOLAS";

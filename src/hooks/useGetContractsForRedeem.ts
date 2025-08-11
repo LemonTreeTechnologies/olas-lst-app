@@ -18,10 +18,7 @@ const getContractWithStakeAmount = (
   };
 };
 
-export const useGetContractsForDeposit = (amount: bigint) => {
-  /**
-   * Get active staking contracts sorted by reminderPerSlot
-   */
+export const useGetContractsForRedeem = (amount: bigint) => {
   const { data: stakingContracts, isLoading: isContractsLoading } =
     useFetchActiveModels(
       {
@@ -40,13 +37,13 @@ export const useGetContractsForDeposit = (amount: bigint) => {
   }
 
   /**
-   * Calculate contracts with stake amount for the provided total amount
+   * Calculate contracts with unstake amount for the provided total amount
    * Strategy:
-   * 1) Close partially taken slots first, sorted by smallest reminderPerSlot
-   * 2) Then fill empty slots ordered by smallest stakeLimitPerSlot to close more slots
+   * 1) Free partially filled slots first (take currently filled amount), smallest filled amounts first
+   * 2) Then free fully filled slots, preferring smaller stake limits first
    */
   let remainingAmount = amount;
-  const contractsForDeposit: Array<{
+  const contractsForRedeem: Array<{
     chainId: StakingModel["chainId"];
     stakingProxy: StakingModel["stakingProxy"];
     reminderPerSlot: StakingModel["reminderPerSlot"];
@@ -55,54 +52,62 @@ export const useGetContractsForDeposit = (amount: bigint) => {
 
   const models = stakingContracts.stakingModels;
 
-  // Step 1: partially taken slots by smallest reminderPerSlot
-  const partialModels = models
-    .filter((model) => {
-      const reminder = BigInt(model.reminderPerSlot);
-      const limit = BigInt(model.stakeLimitPerSlot);
-      return reminder > BigInt(0) && reminder < limit;
-    })
-    .sort((a, b) =>
-      BigInt(a.reminderPerSlot) < BigInt(b.reminderPerSlot) ? -1 : 1,
-    );
+  // Normalize data per model
+  const normalized = models.map((model) => {
+    const limit = BigInt(model.stakeLimitPerSlot);
+    const reminder = BigInt(model.reminderPerSlot);
+    const filledInPartial = limit - reminder; // if between (0, limit) => partial exists
+    const hasPartial = filledInPartial > BigInt(0) && filledInPartial < limit;
+    const usedSlots = Number(model.usedSlots);
+    const fullSlotsCount = Math.max(usedSlots - (hasPartial ? 1 : 0), 0);
 
-  for (const contract of partialModels) {
+    return {
+      model,
+      limit,
+      reminder,
+      filledInPartial,
+      hasPartial,
+      fullSlotsCount,
+    };
+  });
+
+  // Step 1: partially filled slots -> free the slot (unstake filled amount) by smallest filled first
+  const partials = normalized
+    .filter((item) => item.hasPartial)
+    .sort((a, b) => (a.filledInPartial < b.filledInPartial ? -1 : 1));
+
+  for (const item of partials) {
     if (remainingAmount <= BigInt(0)) break;
-    const reminderPerSlot = BigInt(contract.reminderPerSlot);
+    const toUnstake = item.filledInPartial;
     const contractWithStakeAmount = getContractWithStakeAmount(
-      contract,
-      reminderPerSlot,
+      item.model,
+      toUnstake,
       remainingAmount,
     );
     if (contractWithStakeAmount) {
-      contractsForDeposit.push(contractWithStakeAmount);
+      contractsForRedeem.push(contractWithStakeAmount);
       remainingAmount -= contractWithStakeAmount.allocation;
     }
   }
 
-  // Step 2: fill empty slots by smallest stakeLimitPerSlot
+  // Step 2: fully filled slots -> iterate per full slot by smallest limit first
   if (remainingAmount > BigInt(0)) {
-    const fullSlotModels = models
-      .slice()
-      .sort((a, b) =>
-        BigInt(a.stakeLimitPerSlot) < BigInt(b.stakeLimitPerSlot) ? -1 : 1,
-      );
+    const fulls = normalized
+      .filter((item) => item.fullSlotsCount > 0)
+      .sort((a, b) => (a.limit < b.limit ? -1 : 1));
 
-    for (const contract of fullSlotModels) {
+    for (const item of fulls) {
       if (remainingAmount <= BigInt(0)) break;
-
-      const stakeLimitPerSlot = BigInt(contract.stakeLimitPerSlot);
-      const availableSlots = Number(contract.availableSlots);
-
-      for (let i = 0; i < availableSlots; i++) {
+      const perSlotAmount = item.limit;
+      for (let i = 0; i < item.fullSlotsCount; i++) {
         if (remainingAmount <= BigInt(0)) break;
         const contractWithStakeAmount = getContractWithStakeAmount(
-          contract,
-          stakeLimitPerSlot,
+          item.model,
+          perSlotAmount,
           remainingAmount,
         );
         if (contractWithStakeAmount) {
-          contractsForDeposit.push(contractWithStakeAmount);
+          contractsForRedeem.push(contractWithStakeAmount);
           remainingAmount -= contractWithStakeAmount.allocation;
         }
       }
@@ -110,7 +115,7 @@ export const useGetContractsForDeposit = (amount: bigint) => {
   }
 
   return {
-    contracts: contractsForDeposit,
+    contracts: contractsForRedeem,
     isLoading: isContractsLoading,
   };
 };
