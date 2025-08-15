@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Switcher } from "./_components/Switcher";
 import { WithdrawForm } from "./_components/WithdrawForm";
-import { Card } from "@/components/Card";
 import { WalletInfo } from "./_components/WalletInfo";
+import { Claim } from "./_components/Claim";
 
 const TABS = {
   request: "Request",
@@ -19,7 +19,7 @@ const Page = () => {
       <Switcher tabs={Object.values(TABS)} selected={tab} onChange={setTab} />
       <WalletInfo />
       {tab === TABS.request && <WithdrawForm />}
-      {tab === TABS.claim && <Card title="Claim withdrawal">Coming soon</Card>}
+      {tab === TABS.claim && <Claim />}
     </div>
   );
 };

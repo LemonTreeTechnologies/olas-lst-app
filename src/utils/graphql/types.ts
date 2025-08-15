@@ -35,4 +35,15 @@ export type Staker = {
   id: string;
   pendingWithdrawRequests: number;
   completedWithdrawRequests: number;
+  withdrawRequests: {
+    requestExecution: {
+      amount: string;
+      transactionHash: string;
+    } | null;
+    id: string;
+    requestId: string;
+    olasAmount: string;
+    transactionHash: string;
+    withdrawTime: string;
+  }[];
 };
