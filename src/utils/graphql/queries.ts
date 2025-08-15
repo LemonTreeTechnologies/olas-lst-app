@@ -1,14 +1,13 @@
 import { gql, request } from "graphql-request";
 
-import { StakingModel, StakingModelStatus } from "./types";
+import {
+  StakingModel,
+  GetStakingModelsQueryParams,
+  GetStakerParams,
+  Staker,
+} from "./types";
 import { OLAS_LST_SUBGRAPH_URL } from "@/constants";
-
-export type GetStakingModelsQueryParams = {
-  status: StakingModelStatus;
-  orderBy?: string;
-  orderDirection?: string;
-  reminderPerSlot_gte?: number;
-};
+import { Address } from "viem";
 
 const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
   query GetStakingModels(
@@ -41,9 +40,26 @@ const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
   }
 `;
 
+const stakerQuery = `
+  query GetStaker($id: String!) {
+    staker(id: $id) {
+      id
+      pendingWithdrawRequests
+      completedWithdrawRequests
+    }
+  }
+`;
+
 export const getStakingModels = async (params: GetStakingModelsQueryParams) =>
   request<{ stakingModels: StakingModel[] }>(
     OLAS_LST_SUBGRAPH_URL,
     getStakingModelsQuery(params),
+    params,
+  );
+
+export const getStaker = async (params: GetStakerParams) =>
+  request<{ staker: Staker | null }>(
+    OLAS_LST_SUBGRAPH_URL,
+    stakerQuery,
     params,
   );

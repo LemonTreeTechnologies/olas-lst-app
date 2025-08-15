@@ -14,6 +14,7 @@ import { RequestWithdrawalStatus } from "./types";
 export const useRequestWithdrawal = (
   contracts: ContractForDeposit[],
   amount: bigint,
+  onFinish: () => void,
 ) => {
   const [isRequestWithdrawalLoading, setIsRequestWithdrawalLoading] =
     useState(false);
@@ -97,13 +98,23 @@ export const useRequestWithdrawal = (
     writeContract,
   ]);
 
-  // Reset states once deposit finished
+  // Reset states once request finished
   useEffect(() => {
     if (isRequestWithdrawalLoading && isRequestStarted && !isRequestLoading) {
       setIsRequestWithdrawalLoading(false);
       setIsRequestStarted(false);
+
+      if (requestHash) {
+        onFinish();
+      }
     }
-  }, [isRequestLoading, isRequestStarted, isRequestWithdrawalLoading]);
+  }, [
+    isRequestLoading,
+    isRequestStarted,
+    isRequestWithdrawalLoading,
+    requestHash,
+    onFinish,
+  ]);
 
   const baseError = approveError || requestError;
 

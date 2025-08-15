@@ -9,14 +9,16 @@ import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
 import { useProjectedApr } from "@/hooks/useApr";
-import { useOlasBalances } from "@/hooks/useFetchBalance";
+import {
+  useOlasBalances,
+  useRefetchBalanceAfterUpdate,
+} from "@/hooks/useFetchBalance";
 import { useGetContractsForDeposit } from "@/hooks/useGetContractsForDeposit";
 import { useDebounce } from "@uidotdev/usehooks";
 import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
 import { formatNumber } from "@/utils/format";
 import { Button } from "@/components/Button";
 import { useStake } from "./hooks";
-import { queryClient } from "@/context/ReownAppKitProvider";
 import { SCOPE_KEYS } from "@/constants/scopeKeys";
 import { Status } from "./Status";
 
@@ -60,17 +62,16 @@ export const StakeForm = () => {
   } = usePreviewDeposit(amountInWei);
 
   const handleFinish = useCallback(() => {
-    queryClient.removeQueries({
-      predicate: (query) =>
-        SCOPE_KEYS.stOlas(address, chainId) ===
-        (query.queryKey[1] as Record<string, string>)?.scopeKey,
-    });
-
     setAmount("");
-  }, [address, chainId]);
+  }, []);
 
   const { handleStake, status, isBusy, approveHash, depositHash, error } =
     useStake(contracts, amountInWei, handleFinish);
+
+  useRefetchBalanceAfterUpdate(
+    depositHash,
+    SCOPE_KEYS.stOlas(address, chainId),
+  );
 
   return (
     <Card title="Stake OLAS">

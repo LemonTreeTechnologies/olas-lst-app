@@ -2,6 +2,13 @@ import { Address } from "viem";
 
 export type StakingModelStatus = "Retired" | "Active" | "Inactive";
 
+export type GetStakingModelsQueryParams = {
+  status: StakingModelStatus;
+  orderBy?: string;
+  orderDirection?: string;
+  reminderPerSlot_gte?: number;
+};
+
 export type StakingModel = {
   id: string;
   chainId: string;
@@ -18,4 +25,14 @@ export type StakingModel = {
   blockNumber: string;
   blockTimestamp: string;
   transactionHash: string;
+};
+
+export type GetStakerParams = {
+  id: Address | undefined;
+};
+
+export type Staker = {
+  id: string;
+  pendingWithdrawRequests: number;
+  completedWithdrawRequests: number;
 };

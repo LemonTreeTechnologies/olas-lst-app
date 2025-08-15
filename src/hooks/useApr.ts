@@ -10,7 +10,7 @@ import { ContractForDeposit } from "@/types";
 
 const PROD_TO_TESTNET_CHAIN_IDS: Record<string, number> = {
   "8453": 84532,
-  "100": 1020,
+  "100": 10200,
 };
 
 type ProjectedContract = Pick<
