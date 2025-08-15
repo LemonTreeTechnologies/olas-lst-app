@@ -1,14 +1,17 @@
 "use client";
 
 import { parseUnits } from "viem";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
-import { useOlasBalances } from "@/hooks/useFetchBalance";
+import {
+  useOlasBalances,
+  useRefetchBalanceAfterUpdate,
+} from "@/hooks/useFetchBalance";
 import { useGetContractsForRedeem } from "@/hooks/useGetContractsForRedeem";
 import { useDebounce } from "@uidotdev/usehooks";
 import { formatNumber } from "@/utils/format";
@@ -16,6 +19,7 @@ import { Button } from "@/components/Button";
 import { useRequestWithdrawal } from "./hooks";
 import { usePreviewRedeem } from "@/hooks/usePreviewRedeem";
 import { Status } from "./Status";
+import { SCOPE_KEYS } from "@/constants/scopeKeys";
 
 const getWithdrawValueContent = ({
   amount,
@@ -53,6 +57,10 @@ export const WithdrawForm = () => {
     isLoading: isPreviewRedeemLoading,
   } = usePreviewRedeem(amountInWei);
 
+  const handleFinish = useCallback(() => {
+    setAmount("");
+  }, []);
+
   const {
     handleRequestToWithdraw,
     status,
@@ -60,7 +68,12 @@ export const WithdrawForm = () => {
     approveHash,
     requestHash,
     error,
-  } = useRequestWithdrawal(contracts, amountInWei);
+  } = useRequestWithdrawal(contracts, amountInWei, handleFinish);
+
+  useRefetchBalanceAfterUpdate(
+    requestHash,
+    SCOPE_KEYS.stOlas(address, chainId),
+  );
 
   return (
     <Card title="Request withdrawal">
@@ -74,7 +87,7 @@ export const WithdrawForm = () => {
       <KeyValueList
         items={[
           {
-            label: "You will receive", // previewRedeem
+            label: "You will receive",
             value: getWithdrawValueContent({
               amount,
               placeholder: "0.00 OLAS",
