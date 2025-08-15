@@ -9,6 +9,7 @@ import { LuClock, LuCircleCheckBig } from "react-icons/lu";
 import { useStaker } from "@/hooks/useFetchStaker";
 import { Spinner } from "@/components/loaders/Spinner";
 import { InputSkeleton } from "@/components/loaders/Skeleton";
+import { Tag } from "@/components/Tag";
 
 export const WalletInfo = () => {
   const { isConnected, chainId, address } = useAccount();
@@ -26,28 +27,22 @@ export const WalletInfo = () => {
       <div className="flex flex-col items-start mb-8">
         <span className="text-sm text-white/60">My requests</span>
         <div className="flex gap-3 mt-2">
-          <div className="flex items-center gap-2 rounded-xl bg-[#FFFFFF0D] px-4 py-2">
-            <LuClock color="#CFC500" size={20} />{" "}
-            <span className="text-base font-semibold">
-              Pending -{" "}
-              {isStakerLoading ? (
-                <Spinner />
-              ) : (
-                (stakerData?.staker?.pendingWithdrawRequests ?? 0)
-              )}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 rounded-xl bg-[#FFFFFF0D] px-4 py-2">
-            <LuCircleCheckBig color="#00CF6B" size={20} />
-            <span className="text-base font-semibold">
-              Completed -{" "}
-              {isStakerLoading ? (
-                <Spinner />
-              ) : (
-                (stakerData?.staker?.completedWithdrawRequests ?? 0)
-              )}
-            </span>
-          </div>
+          <Tag icon={<LuClock color="#CFC500" size={20} />}>
+            Pending -{" "}
+            {isStakerLoading ? (
+              <Spinner />
+            ) : (
+              (stakerData?.staker?.pendingWithdrawRequests ?? 0)
+            )}
+          </Tag>
+          <Tag icon={<LuCircleCheckBig color="#00CF6B" size={20} />}>
+            Completed -{" "}
+            {isStakerLoading ? (
+              <Spinner />
+            ) : (
+              (stakerData?.staker?.completedWithdrawRequests ?? 0)
+            )}
+          </Tag>
         </div>
       </div>
       <div className="flex flex-col items-start">
