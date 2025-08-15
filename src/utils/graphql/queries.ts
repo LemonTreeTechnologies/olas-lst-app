@@ -7,7 +7,6 @@ import {
   Staker,
 } from "./types";
 import { OLAS_LST_SUBGRAPH_URL } from "@/constants";
-import { Address } from "viem";
 
 const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
   query GetStakingModels(
