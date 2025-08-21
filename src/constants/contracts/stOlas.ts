@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { sepolia } from "viem/chains";
 
 export const ST_OLAS_ADDRESSES: Record<number, Address> = {
-  [sepolia.id]: "0x9F558A1c88b081a6e2f772430E49a0d28322C6e1",
+  [sepolia.id]: "0x7581FbCD0D2a77C4cc95483F0C30F423d856768e",
 };
 
 export const ST_OLAS_ABI = [
