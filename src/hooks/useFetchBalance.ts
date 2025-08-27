@@ -107,7 +107,7 @@ export const useRefetchBalanceAfterUpdate = (
   useEffect(() => {
     if (reFetched.current) return;
     if (isSuccess) {
-      queryClient.removeQueries({
+      queryClient.refetchQueries({
         predicate: (query) =>
           balanceScopeKey ===
           (query.queryKey[1] as Record<string, string>)?.scopeKey,
