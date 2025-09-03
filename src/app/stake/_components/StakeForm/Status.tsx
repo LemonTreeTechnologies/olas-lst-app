@@ -42,12 +42,12 @@ export const Status = ({
       )}
 
       {status === "depositing" && (
-        <div className="loading-ellipses">Waiting for deposit processing</div>
+        <div className="loading-ellipses">Waiting for deposit confirming</div>
       )}
 
       {status === "deposited" && (
         <div>
-          Successfully staked!{" "}
+          Deposit initiated!{" "}
           {depositHash && chainId != null && (
             <TxnLink chainId={chainId} hash={depositHash} />
           )}

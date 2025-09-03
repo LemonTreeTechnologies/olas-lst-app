@@ -42,14 +42,12 @@ export const Status = ({
       )}
 
       {status === "finalizing" && (
-        <div className="loading-ellipses">
-          Waiting for withdraw finalize approval
-        </div>
+        <div className="loading-ellipses">Waiting for claim confirming</div>
       )}
 
       {status === "finalized" && (
         <div>
-          Withdraw finalize initiated!{" "}
+          Claim initiated!{" "}
           {finalizeHash && chainId != null && (
             <TxnLink chainId={chainId} hash={finalizeHash} />
           )}

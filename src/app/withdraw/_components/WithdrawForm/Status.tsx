@@ -43,7 +43,7 @@ export const Status = ({
 
       {status === "requesting" && (
         <div className="loading-ellipses">
-          Waiting for withdraw request approval
+          Waiting for withdraw request confirming
         </div>
       )}
 
