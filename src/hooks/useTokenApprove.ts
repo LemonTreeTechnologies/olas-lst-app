@@ -7,18 +7,36 @@ import {
   usePublicClient,
 } from "wagmi";
 import { useState, useCallback, useEffect } from "react";
+import {
+  TREASURY_ABI,
+  TREASURY_ADDRESSES,
+} from "@/constants/contracts/treasury";
+
+type ERC20Approve = {
+  erc20: {
+    token: Address;
+    spender: Address;
+  };
+  erc6909?: never; // explicitly forbid
+};
+
+type ERC6909Approve = {
+  erc20?: never; // explicitly forbid
+  erc6909: {
+    requestId: bigint;
+  };
+};
 
 /**
  * Hook to handle token approval flow, including checking existing allowance within the approve function.
  * Returns the transaction hash, loading state, error state, and the approve function.
+ *
+ * Note: for treasury approvals requestId is required, pass it to args if provided
  */
 export const useTokenApprove = ({
-  token,
-  spender,
-}: {
-  token?: Address;
-  spender?: Address;
-}): {
+  erc20,
+  erc6909,
+}: ERC20Approve | ERC6909Approve): {
   hash: string | undefined;
   isLoading: boolean;
   isApprovalSuccessOrNotNeeded: boolean;
@@ -47,7 +65,7 @@ export const useTokenApprove = ({
 
   const approve = useCallback(
     async (amount: bigint) => {
-      if (!token || !account || !spender) {
+      if (!(erc20 || erc6909) || !account) {
         console.error("Missing required parameters for approval.");
         setApproveError(new Error("Missing required parameters."));
         return;
@@ -60,10 +78,12 @@ export const useTokenApprove = ({
 
       try {
         const allowanceData = await publicClient?.readContract({
-          address: token,
-          abi: erc20Abi,
+          address: erc6909 ? TREASURY_ADDRESSES[DEFAULT_CHAIN_ID] : erc20.token,
+          abi: erc6909 ? TREASURY_ABI : erc20Abi,
           functionName: "allowance",
-          args: [account, spender],
+          args: erc6909
+            ? [account, TREASURY_ADDRESSES[DEFAULT_CHAIN_ID], erc6909.requestId]
+            : [account, erc20.spender],
         });
 
         const currentAllowance = allowanceData
@@ -72,10 +92,18 @@ export const useTokenApprove = ({
 
         if (currentAllowance < amount) {
           const hash = await writeContractAsync({
-            address: token,
-            abi: erc20Abi,
+            address: erc6909
+              ? TREASURY_ADDRESSES[DEFAULT_CHAIN_ID]
+              : erc20.token,
+            abi: erc6909 ? TREASURY_ABI : erc20Abi,
             functionName: "approve",
-            args: [spender, amount],
+            args: erc6909
+              ? [
+                  TREASURY_ADDRESSES[DEFAULT_CHAIN_ID],
+                  erc6909.requestId,
+                  amount,
+                ]
+              : [erc20.spender, amount],
           });
           setApprovalHash(hash);
         } else {
@@ -91,7 +119,7 @@ export const useTokenApprove = ({
         setIsApproveLoading(false);
       }
     },
-    [token, account, spender, writeContractAsync, publicClient],
+    [erc20, account, erc6909, writeContractAsync, publicClient],
   );
 
   useEffect(() => {

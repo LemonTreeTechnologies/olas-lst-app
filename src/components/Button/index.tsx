@@ -4,7 +4,7 @@ import { Spinner } from "../loaders/Spinner";
 type ButtonProps = {
   children: string | React.ReactElement;
   onClick?: MouseEventHandler<HTMLButtonElement>;
-  variant?: "primary" | "link";
+  variant?: "primary" | "secondary" | "link";
   className?: string;
   disabled?: boolean;
   isLoading?: boolean;
@@ -13,11 +13,13 @@ type ButtonProps = {
 const VARIANT_CLASS_NAMES = {
   primary:
     "py-2 px-4 bg-[#364DED] hover:bg-[#364DED]/90 text-white cursor-pointer",
+  secondary: "py-2 px-4 hover:bg-white/5 text-white cursor-pointer",
   link: "text-white/50 hover:text-white/70 cursor-pointer",
 };
 
 const DISABLED_CLASS_NAMES = {
   primary: "py-2 px-4 bg-[#364DED]/20 cursor-not-allowed text-white/40",
+  secondary: "py-2 px-4 cursor-not-allowed text-white/40",
   link: "text-white/30 cursor-not-allowed",
 };
 
