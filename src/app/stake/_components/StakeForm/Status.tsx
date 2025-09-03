@@ -23,7 +23,7 @@ export const Status = ({
     >
       {status === "approving" && (
         <div className="loading-ellipses">
-          Checking allowance and approve if needed
+          Checking allowance and approving if needed
         </div>
       )}
 

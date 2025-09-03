@@ -28,8 +28,10 @@ export const useRequestWithdrawal = (
     error: approveError,
     approve,
   } = useTokenApprove({
-    token: ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
-    spender: TREASURY_ADDRESSES[DEFAULT_CHAIN_ID],
+    erc20: {
+      token: ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
+      spender: TREASURY_ADDRESSES[DEFAULT_CHAIN_ID],
+    },
   });
 
   // request withdrawal

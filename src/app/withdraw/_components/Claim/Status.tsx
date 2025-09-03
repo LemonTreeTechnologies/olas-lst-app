@@ -1,24 +1,24 @@
 import { TxnLink } from "@/components/TxnLink";
-import { RequestWithdrawalStatus } from "./types";
+import { FInalizeWithdrawalStatus } from "./types";
 
 export const Status = ({
   status,
   chainId,
   approveHash,
-  requestHash,
+  finalizeHash,
   error,
 }: {
-  status: RequestWithdrawalStatus;
+  status: FInalizeWithdrawalStatus;
   chainId?: number;
   approveHash?: string;
-  requestHash?: string;
+  finalizeHash?: string;
   error?: unknown;
 }) => {
   if (status === "idle") return null;
 
   return (
     <div
-      className="bg-white/5 border-2 border-dashed border-[#364DED]/50 text-white/80 px-4 py-3 rounded-lg"
+      className="bg-white/5 border-2 border-dashed border-[#364DED]/50 text-white/80 px-4 py-3 rounded-lg mb-4"
       role="alert"
     >
       {status === "approving" && (
@@ -41,17 +41,17 @@ export const Status = ({
         </>
       )}
 
-      {status === "requesting" && (
+      {status === "finalizing" && (
         <div className="loading-ellipses">
-          Waiting for withdraw request approval
+          Waiting for withdraw finalize approval
         </div>
       )}
 
-      {status === "requested" && (
+      {status === "finalized" && (
         <div>
-          Withdraw request initiated!{" "}
-          {requestHash && chainId != null && (
-            <TxnLink chainId={chainId} hash={requestHash} />
+          Withdraw finalize initiated!{" "}
+          {finalizeHash && chainId != null && (
+            <TxnLink chainId={chainId} hash={finalizeHash} />
           )}
         </div>
       )}

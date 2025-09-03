@@ -27,8 +27,10 @@ export const useStake = (
     error: approveError,
     approve,
   } = useTokenApprove({
-    token: OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
-    spender: DEPOSITORY_ADDRESSES[DEFAULT_CHAIN_ID],
+    erc20: {
+      token: OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
+      spender: DEPOSITORY_ADDRESSES[DEFAULT_CHAIN_ID],
+    },
   });
 
   // stake
