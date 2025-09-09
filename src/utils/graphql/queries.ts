@@ -46,15 +46,18 @@ const stakerQuery = `
       pendingWithdrawRequests
       completedWithdrawRequests
       withdrawRequests(orderBy: withdrawTime, orderDirection: asc) {
-        requestExecution {
-          amount
-          transactionHash
-        }
         id
         requestId
         olasAmount
         transactionHash
         withdrawTime
+        requestExecution {
+          amount
+          transactionHash
+        }
+        requestApproval {
+          amount
+        }
       }
     }
   }

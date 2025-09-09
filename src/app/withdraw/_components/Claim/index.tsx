@@ -43,6 +43,9 @@ export const Claim = () => {
         timeTillAvailable: isAvailable
           ? null
           : formatTimeDifference(secondsTillAvailable),
+        isApproved: item.requestApproval
+          ? item.requestApproval.amount === item.olasAmount
+          : false,
       };
     });
   }, [stakerData]);
@@ -53,11 +56,16 @@ export const Claim = () => {
   return (
     <>
       <Card title="Claim withdrawal">
-        {isStakerLoading && <Spinner />}
+        {isStakerLoading && (
+          <div className="flex my-8 justify-center">
+            <Spinner />
+          </div>
+        )}
 
         {view === "default" && (
           <DefaultView
             requests={requests}
+            isLoading={isStakerLoading}
             isClaimDisabled={!hasAvailableRequests}
             onClaim={() => setView("claim")}
           />

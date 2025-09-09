@@ -40,6 +40,9 @@ export type Staker = {
       amount: string;
       transactionHash: string;
     } | null;
+    requestApproval: {
+      amount: string;
+    } | null;
     id: string;
     requestId: string;
     olasAmount: string;

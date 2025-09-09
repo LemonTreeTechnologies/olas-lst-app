@@ -40,3 +40,7 @@ export const formatTimeDifference = (
     return `${differenceInMinutes} minute${differenceInMinutes > 1 ? "s" : ""}${postfixWithSpace}`;
   }
 };
+
+export const pluralize = (word: string, count: number): string => {
+  return count === 1 ? word : `${word}s`;
+};
