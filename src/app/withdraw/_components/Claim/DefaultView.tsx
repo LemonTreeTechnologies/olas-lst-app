@@ -14,12 +14,14 @@ import { WithdrawRequest } from "./types";
 
 type DefaultViewProps = {
   requests: WithdrawRequest[];
+  isLoading: boolean;
   isClaimDisabled: boolean;
   onClaim: () => void;
 };
 
 export const DefaultView = ({
   requests,
+  isLoading,
   isClaimDisabled,
   onClaim,
 }: DefaultViewProps) => {
@@ -28,42 +30,52 @@ export const DefaultView = ({
   return (
     <>
       <div className="flex flex-col divide-y divide-[#FFFFFF1A]">
-        {requests.map((request) => (
-          <div
-            className="flex items-center justify-between py-4"
-            key={request.id}
-          >
-            <div className="flex gap-4 items-center text-base font-semibold">
-              <Image
-                src={TOKEN_LOGOS.OLAS}
-                alt="OLAS logo"
-                width="24"
-                height="24"
-              />
-              {request.olasAmount}
-            </div>
-            <div className="flex gap-4 items-center">
-              {request.isComplete ? (
-                <Tag
-                  icon={<LuCircleCheckBig color="#00CF6B" size={20} />}
-                  className="bg-[#00CF6B1A] text-[#00CF6B]"
-                >
-                  Completed
-                </Tag>
-              ) : request.isAvailable ? (
-                <Tag>Available</Tag>
-              ) : (
-                <Tag
-                  icon={<LuClock color="#CFC500" size={20} />}
-                  className="bg-[#CFC5001A] text-[#CFC500]"
-                >
-                  ~{request.timeTillAvailable}
-                </Tag>
-              )}
-              <TxnLink hash={request.txHash} chainId={DEFAULT_CHAIN_ID} short />
-            </div>
+        {!isLoading && requests.length === 0 ? (
+          <div className="text-center text-lg my-8 font-secondary">
+            No withdrawal requests found
           </div>
-        ))}
+        ) : (
+          requests.map((request) => (
+            <div
+              className="flex items-center justify-between py-4"
+              key={request.id}
+            >
+              <div className="flex gap-4 items-center text-base font-semibold">
+                <Image
+                  src={TOKEN_LOGOS.OLAS}
+                  alt="OLAS logo"
+                  width="24"
+                  height="24"
+                />
+                {request.olasAmount}
+              </div>
+              <div className="flex gap-4 items-center">
+                {request.isComplete ? (
+                  <Tag
+                    icon={<LuCircleCheckBig color="#00CF6B" size={20} />}
+                    className="bg-[#00CF6B1A] text-[#00CF6B]"
+                  >
+                    Completed
+                  </Tag>
+                ) : request.isAvailable ? (
+                  <Tag>Available</Tag>
+                ) : (
+                  <Tag
+                    icon={<LuClock color="#CFC500" size={20} />}
+                    className="bg-[#CFC5001A] text-[#CFC500]"
+                  >
+                    ~{request.timeTillAvailable}
+                  </Tag>
+                )}
+                <TxnLink
+                  hash={request.txHash}
+                  chainId={DEFAULT_CHAIN_ID}
+                  short
+                />
+              </div>
+            </div>
+          ))
+        )}
       </div>
       {!isAccountConnected ? (
         <div className="flex justify-end">
