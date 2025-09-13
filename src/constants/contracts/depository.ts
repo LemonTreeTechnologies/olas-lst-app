@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { sepolia } from "viem/chains";
 
 export const DEPOSITORY_ADDRESSES: Record<number, Address> = {
-  [sepolia.id]: "0x655132Ab379330ECa202173Cb7C06ee03EF6C9EF",
+  [sepolia.id]: "0xe2e6425D0B8e708bA15FcDc25C9384145FbDB106",
 };
 
 export const DEPOSITORY_ABI = [
