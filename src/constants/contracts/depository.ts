@@ -8,77 +8,130 @@ export const DEPOSITORY_ADDRESSES: Record<number, Address> = {
 export const DEPOSITORY_ABI = [
   {
     inputs: [
-      { internalType: "address", name: "_olas", type: "address" },
-      { internalType: "address", name: "_st", type: "address" },
-      { internalType: "address", name: "_lock", type: "address" },
+      {
+        internalType: "address",
+        name: "_olas",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_st",
+        type: "address",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
-  { inputs: [], name: "AlreadyInitialized", type: "error" },
+  {
+    inputs: [],
+    name: "AlreadyInitialized",
+    type: "error",
+  },
   {
     inputs: [
-      { internalType: "uint256", name: "provided", type: "uint256" },
-      { internalType: "uint256", name: "max", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "provided",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "max",
+        type: "uint256",
+      },
     ],
     name: "Overflow",
     type: "error",
   },
   {
     inputs: [
-      { internalType: "address", name: "sender", type: "address" },
-      { internalType: "address", name: "owner", type: "address" },
+      {
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
     ],
     name: "OwnerOnly",
     type: "error",
   },
   {
+    inputs: [],
+    name: "Paused",
+    type: "error",
+  },
+  {
     inputs: [
-      { internalType: "uint256", name: "stakingModelId", type: "uint256" },
+      {
+        internalType: "uint8",
+        name: "productType",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+    ],
+    name: "ProductTypeDepositOverflow",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ReentrancyGuard",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "stakingModelId",
+        type: "uint256",
+      },
     ],
     name: "StakingModelAlreadyExists",
     type: "error",
   },
   {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
     name: "UnauthorizedAccount",
     type: "error",
   },
   {
-    inputs: [
-      { internalType: "uint256", name: "numValues1", type: "uint256" },
-      { internalType: "uint256", name: "numValues2", type: "uint256" },
-    ],
+    inputs: [],
     name: "WrongArrayLength",
     type: "error",
   },
   {
     inputs: [
-      { internalType: "uint256", name: "stakingModelId", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "stakingModelId",
+        type: "uint256",
+      },
     ],
     name: "WrongStakingModel",
     type: "error",
   },
-  { inputs: [], name: "ZeroAddress", type: "error" },
-  { inputs: [], name: "ZeroValue", type: "error" },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "modelIds",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "bool[]",
-        name: "statuses",
-        type: "bool[]",
-      },
-    ],
-    name: "ChangeModelStatuses",
-    type: "event",
+    inputs: [],
+    name: "ZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroValue",
+    type: "error",
   },
   {
     anonymous: false,
@@ -127,25 +180,6 @@ export const DEPOSITORY_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "lockFactor",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "maxStakingLimit",
-        type: "uint256",
-      },
-    ],
-    name: "DepositoryParamsUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: true,
         internalType: "address",
         name: "implementation",
@@ -161,29 +195,11 @@ export const DEPOSITORY_ABI = [
       {
         indexed: true,
         internalType: "address",
-        name: "account",
+        name: "lzOracle",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "olasAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "lockAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "vaultBalance",
-        type: "uint256",
-      },
     ],
-    name: "Locked",
+    name: "LzOracleUpdated",
     type: "event",
   },
   {
@@ -197,6 +213,44 @@ export const DEPOSITORY_ABI = [
       },
     ],
     name: "OwnerUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "PausedDepository",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "enum ProductType",
+        name: "productType",
+        type: "uint8",
+      },
+    ],
+    name: "ProductTypeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+    ],
+    name: "Retired",
     type: "event",
   },
   {
@@ -222,25 +276,56 @@ export const DEPOSITORY_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
+        indexed: true,
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "stakingProxy",
+        type: "address",
       },
       {
         indexed: false,
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
+        internalType: "uint256",
+        name: "stakeLimitPerSlots",
+        type: "uint256",
       },
       {
         indexed: false,
-        internalType: "uint256[]",
-        name: "supplies",
-        type: "uint256[]",
+        internalType: "uint256",
+        name: "numSlots",
+        type: "uint256",
       },
     ],
-    name: "StakingModelsActivated",
+    name: "StakingModelActivated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "stakingProxy",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "enum StakingModelStatus",
+        name: "status",
+        type: "uint8",
+      },
+    ],
+    name: "StakingModelStatusSet",
     type: "event",
   },
   {
@@ -258,18 +343,18 @@ export const DEPOSITORY_ABI = [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: "UnpausedDepository",
+    type: "event",
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: true,
         internalType: "address",
         name: "sender",
         type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "unstakeAmount",
-        type: "uint256",
       },
       {
         indexed: false,
@@ -295,35 +380,148 @@ export const DEPOSITORY_ABI = [
   },
   {
     inputs: [],
-    name: "MAX_LOCK_FACTOR",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    name: "ALPHA_DEPOSIT_LIMIT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
+    name: "BETA_DEPOSIT_LIMIT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "stakingProxy",
+        type: "address",
+      },
+    ],
+    name: "LzCloseStakingModel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "stakingProxy",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "stakeLimitPerSlot",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "numSlots",
+        type: "uint256",
+      },
+    ],
+    name: "LzCreateAndActivateStakingModel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "PROXY_SLOT",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
     name: "STAKE",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
     name: "UNSTAKE",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "UNSTAKE_RETIRED",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "VERSION",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "address", name: "newImplementation", type: "address" },
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
     ],
     name: "changeImplementation",
     outputs: [],
@@ -332,23 +530,51 @@ export const DEPOSITORY_ABI = [
   },
   {
     inputs: [
-      { internalType: "uint256", name: "newLockFactor", type: "uint256" },
-      { internalType: "uint256", name: "newMaxStakingLimit", type: "uint256" },
+      {
+        internalType: "address",
+        name: "newLzOracle",
+        type: "address",
+      },
     ],
-    name: "changeLockFactor",
+    name: "changeLzOracle",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
     name: "changeOwner",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "newTreasury", type: "address" }],
+    inputs: [
+      {
+        internalType: "enum ProductType",
+        name: "newProductType",
+        type: "uint8",
+      },
+    ],
+    name: "changeProductType",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newTreasury",
+        type: "address",
+      },
+    ],
     name: "changeTreasury",
     outputs: [],
     stateMutability: "nonpayable",
@@ -356,9 +582,44 @@ export const DEPOSITORY_ABI = [
   },
   {
     inputs: [
-      { internalType: "uint256[]", name: "chainIds", type: "uint256[]" },
-      { internalType: "address[]", name: "stakingProxies", type: "address[]" },
-      { internalType: "uint256[]", name: "supplies", type: "uint256[]" },
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+    ],
+    name: "closeRetiredStakingModels",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "stakeLimitPerSlots",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "numSlots",
+        type: "uint256[]",
+      },
     ],
     name: "createAndActivateStakingModels",
     outputs: [],
@@ -367,28 +628,68 @@ export const DEPOSITORY_ABI = [
   },
   {
     inputs: [
-      { internalType: "uint256", name: "stakeAmount", type: "uint256" },
-      { internalType: "uint256[]", name: "chainIds", type: "uint256[]" },
-      { internalType: "address[]", name: "stakingProxies", type: "address[]" },
-      { internalType: "bytes[]", name: "bridgePayloads", type: "bytes[]" },
-      { internalType: "uint256[]", name: "values", type: "uint256[]" },
+      {
+        internalType: "uint256",
+        name: "stakeAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+      {
+        internalType: "bytes[]",
+        name: "bridgePayloads",
+        type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "values",
+        type: "uint256[]",
+      },
     ],
     name: "deposit",
     outputs: [
-      { internalType: "uint256", name: "stAmount", type: "uint256" },
-      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+      {
+        internalType: "uint256",
+        name: "stAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "amounts",
+        type: "uint256[]",
+      },
     ],
     stateMutability: "payable",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "uint256", name: "stakingModelId", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "stakingModelId",
+        type: "uint256",
+      },
     ],
     name: "getChainIdAndStakingProxy",
     outputs: [
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "address", name: "", type: "address" },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
     ],
     stateMutability: "pure",
     type: "function",
@@ -396,25 +697,55 @@ export const DEPOSITORY_ABI = [
   {
     inputs: [],
     name: "getNumStakingModels",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getSetStakingModelIds",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "uint256", name: "chainId", type: "uint256" },
-      { internalType: "address", name: "stakingProxy", type: "address" },
+      {
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "stakingProxy",
+        type: "address",
+      },
     ],
     name: "getStakingModelId",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "pure",
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "uint256", name: "_lockFactor", type: "uint256" },
-      { internalType: "uint256", name: "_maxStakingLimit", type: "uint256" },
-    ],
+    inputs: [],
     name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
@@ -422,54 +753,164 @@ export const DEPOSITORY_ABI = [
   },
   {
     inputs: [],
-    name: "lock",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "lzOracle",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [],
-    name: "lockFactor",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "mapAccountDeposits",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "mapAccountWithdraws",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     name: "mapChainIdDepositProcessors",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     name: "mapStakingModels",
     outputs: [
-      { internalType: "uint96", name: "supply", type: "uint96" },
-      { internalType: "uint96", name: "remainder", type: "uint96" },
-      { internalType: "bool", name: "active", type: "bool" },
+      {
+        internalType: "uint96",
+        name: "supply",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "remainder",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "stakeLimitPerSlot",
+        type: "uint96",
+      },
+      {
+        internalType: "enum StakingModelStatus",
+        name: "status",
+        type: "uint8",
+      },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "maxStakingLimit",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "olas",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
     name: "owner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "paused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "productType",
+    outputs: [
+      {
+        internalType: "enum ProductType",
+        name: "",
+        type: "uint8",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
@@ -480,7 +921,11 @@ export const DEPOSITORY_ABI = [
         name: "depositProcessors",
         type: "address[]",
       },
-      { internalType: "uint256[]", name: "chainIds", type: "uint256[]" },
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
     ],
     name: "setDepositProcessorChainIds",
     outputs: [],
@@ -488,16 +933,41 @@ export const DEPOSITORY_ABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     name: "setStakingModelIds",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "uint256[]", name: "stakingModelIds", type: "uint256[]" },
-      { internalType: "bool[]", name: "statuses", type: "bool[]" },
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+      {
+        internalType: "enum StakingModelStatus[]",
+        name: "statuses",
+        type: "uint8[]",
+      },
     ],
     name: "setStakingModelStatuses",
     outputs: [],
@@ -507,37 +977,107 @@ export const DEPOSITORY_ABI = [
   {
     inputs: [],
     name: "st",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
     name: "treasury",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
-      { internalType: "uint256", name: "unstakeAmount", type: "uint256" },
-      { internalType: "uint256[]", name: "chainIds", type: "uint256[]" },
-      { internalType: "address[]", name: "stakingProxies", type: "address[]" },
-      { internalType: "bytes[]", name: "bridgePayloads", type: "bytes[]" },
-      { internalType: "uint256[]", name: "values", type: "uint256[]" },
+      {
+        internalType: "uint256",
+        name: "unstakeAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+      {
+        internalType: "bytes[]",
+        name: "bridgePayloads",
+        type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "values",
+        type: "uint256[]",
+      },
     ],
     name: "unstake",
     outputs: [
-      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
+      {
+        internalType: "uint256[]",
+        name: "amounts",
+        type: "uint256[]",
+      },
     ],
     stateMutability: "payable",
     type: "function",
   },
   {
-    inputs: [],
-    name: "ve",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "chainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address[]",
+        name: "stakingProxies",
+        type: "address[]",
+      },
+      {
+        internalType: "bytes[]",
+        name: "bridgePayloads",
+        type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "values",
+        type: "uint256[]",
+      },
+    ],
+    name: "unstakeRetired",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "amounts",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "payable",
     type: "function",
   },
 ] as const;
