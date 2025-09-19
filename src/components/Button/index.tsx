@@ -13,13 +13,14 @@ type ButtonProps = {
 const VARIANT_CLASS_NAMES = {
   primary:
     "py-2 px-4 bg-[#364DED] hover:bg-[#364DED]/90 text-white cursor-pointer",
-  secondary: "py-2 px-4 hover:bg-white/5 text-white cursor-pointer",
+  secondary: "py-2 px-4 bg-white/5 hover:bg-white/10 text-white cursor-pointer",
   link: "text-white/50 hover:text-white/70 cursor-pointer",
 };
 
 const DISABLED_CLASS_NAMES = {
   primary: "py-2 px-4 bg-[#364DED]/20 cursor-not-allowed text-white/40",
-  secondary: "py-2 px-4 cursor-not-allowed text-white/40",
+  secondary:
+    "py-2 px-4 bg-white/5 hover:bg-white/10 cursor-not-allowed text-white/40",
   link: "text-white/30 cursor-not-allowed",
 };
 

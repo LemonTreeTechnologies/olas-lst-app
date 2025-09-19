@@ -1,7 +1,7 @@
 "use client";
 
 import { parseUnits } from "viem";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
@@ -20,6 +20,8 @@ import { Button } from "@/components/Button";
 import { useStake } from "./hooks";
 import { SCOPE_KEYS } from "@/constants/scopeKeys";
 import { Status } from "./Status";
+import { useDepositoryLimits } from "@/hooks/useDepositoryLimits";
+import { Disclaimer } from "./Disclaimer";
 
 const getStakeValueContent = ({
   amount,
@@ -39,6 +41,11 @@ const getStakeValueContent = ({
 
 export const StakeForm = () => {
   const { isConnected: isAccountConnected, chainId, address } = useAccount();
+  const { data: depositoryLimits, isLoading: isDepositoryLimitsLoading } =
+    useDepositoryLimits();
+  const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
+  const handleCloseDisclaimer = () => setIsDisclaimerOpen(false);
+  const wasDisclaimerShown = useRef(false);
 
   const { availableOlasBalance, availableOlasFormattedBalance } =
     useOlasBalances(address, chainId);
@@ -62,6 +69,19 @@ export const StakeForm = () => {
 
   const { handleStake, status, isBusy, approveHash, depositHash, error } =
     useStake(contracts, amountInWei, handleFinish);
+
+  const handleStakeWithDisclaimer = useCallback(() => {
+    const hasLimit = depositoryLimits?.limit !== Infinity;
+    if (!wasDisclaimerShown.current && hasLimit && depositoryLimits) {
+      if (amountInWei > depositoryLimits.limit) {
+        setIsDisclaimerOpen(true);
+        wasDisclaimerShown.current = true;
+        return;
+      }
+    } else {
+      handleStake();
+    }
+  }, [amountInWei, depositoryLimits, handleStake]);
 
   useRefetchBalanceAfterUpdate(
     depositHash,
@@ -123,11 +143,12 @@ export const StakeForm = () => {
           <div className="flex flex-auto">
             <Button
               className="w-full"
-              onClick={handleStake}
+              onClick={handleStakeWithDisclaimer}
               isLoading={isBusy}
               disabled={
                 isPreviewDepositLoading ||
                 isContractsLoading ||
+                isDepositoryLimitsLoading ||
                 !amountInWei ||
                 debouncedAmount !== amount ||
                 isBusy
@@ -137,6 +158,15 @@ export const StakeForm = () => {
             </Button>
           </div>
         </>
+      )}
+      {depositoryLimits && depositoryLimits.limit !== Infinity && (
+        <Disclaimer
+          isOpen={isDisclaimerOpen}
+          onClose={handleCloseDisclaimer}
+          onProceed={handleStake}
+          limit={depositoryLimits.limit}
+          productName={depositoryLimits.productName}
+        />
       )}
     </Card>
   );
