@@ -8,7 +8,6 @@ import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
-import { useProjectedApr } from "@/hooks/useApr";
 import {
   useOlasBalances,
   useRefetchBalanceAfterUpdate,
@@ -50,10 +49,6 @@ export const StakeForm = () => {
 
   const { contracts, isLoading: isContractsLoading } =
     useGetContractsForDeposit(amountInWei);
-  const { apr, isLoading: isAprLoading } = useProjectedApr(
-    contracts,
-    amountInWei,
-  );
 
   const {
     formattedDeposit,
@@ -84,18 +79,6 @@ export const StakeForm = () => {
       />
       <KeyValueList
         items={[
-          {
-            label: "APR",
-            value: getStakeValueContent({
-              amount,
-              placeholder: "Vary",
-              isLoading:
-                isContractsLoading ||
-                isAprLoading ||
-                debouncedAmount !== amount,
-              content: `${apr}%`,
-            }),
-          },
           {
             label: "You will receive",
             value: getStakeValueContent({
@@ -145,7 +128,6 @@ export const StakeForm = () => {
               disabled={
                 isPreviewDepositLoading ||
                 isContractsLoading ||
-                isAprLoading ||
                 !amountInWei ||
                 debouncedAmount !== amount ||
                 isBusy

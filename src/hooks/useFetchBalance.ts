@@ -75,7 +75,14 @@ export const useOlasBalances = (
       : undefined;
   const availableOlasFormattedBalance =
     availableOlasBalance !== undefined
-      ? formatNumber(Number(formatUnits(availableOlasBalance, 18)))
+      ? formatNumber(
+          Number(
+            formatUnits(
+              availableOlasBalance < 0 ? BigInt(0) : availableOlasBalance,
+              18,
+            ),
+          ),
+        )
       : "0";
 
   return {

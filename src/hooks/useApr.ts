@@ -5,8 +5,6 @@ import { useFetchActiveModels } from "./useFetchActiveModels";
 import { SECONDS_IN_YEAR } from "@/constants";
 import { useStTotalStakedAssets } from "./useStTotalStakedAssets";
 import { StakingModel } from "@/utils/graphql/types";
-import { useMemo } from "react";
-import { ContractForDeposit } from "@/types";
 
 const PROD_TO_TESTNET_CHAIN_IDS: Record<string, number> = {
   "8453": 84532,
@@ -83,8 +81,7 @@ const useApr = (
 
   return {
     apr: formatNumber(Math.floor(averageApr * 100), {
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 2,
+      maximumFractionDigits: 1,
     }),
     isLoading,
     error: stOlasTotalStakeAssetsError || contractDetailsError,
@@ -101,71 +98,6 @@ export const useCurrentApr = () => {
     isLoading: isAprLoading,
     error,
   } = useApr(stakingContracts ? stakingContracts.stakingModels : []);
-
-  return {
-    apr,
-    isLoading: isContractsLoading || isAprLoading,
-    error,
-  };
-};
-
-const getUsedSlots = (contract: StakingModel | ContractForDeposit) => {
-  return "usedSlots" in contract
-    ? Number(contract.usedSlots)
-    : contract.allocation < BigInt(contract.reminderPerSlot)
-      ? 0
-      : 1;
-};
-
-export const useProjectedApr = (
-  contractsForDeposit: ContractForDeposit[],
-  stakeAmount: bigint,
-) => {
-  // Get active staking contracts
-  const { data: stakingContracts, isLoading: isContractsLoading } =
-    useFetchActiveModels({}, stakeAmount > BigInt(0));
-
-  /**
-   * Merge current active contracts with projected contracts
-   * for deposit and combine their taken slots
-   */
-  const allStakingContracts = useMemo<ProjectedContract[]>(() => {
-    if (isContractsLoading) return [];
-    if (!stakingContracts) return [];
-
-    const result: ProjectedContract[] = [];
-
-    [...contractsForDeposit, ...stakingContracts.stakingModels].forEach(
-      (contract) => {
-        const contractIndex = result.findIndex(
-          (stakingContract) =>
-            stakingContract.chainId === contract.chainId &&
-            stakingContract.stakingProxy.toLowerCase() ===
-              contract.stakingProxy.toLowerCase(),
-        );
-
-        if (contractIndex === -1) {
-          result.push({
-            chainId: contract.chainId,
-            stakingProxy: contract.stakingProxy,
-            usedSlots: `${getUsedSlots(contract)}`,
-          });
-        } else {
-          result[contractIndex].usedSlots = `${
-            Number(result[contractIndex].usedSlots) + getUsedSlots(contract)
-          }`;
-        }
-      },
-    );
-
-    return result;
-  }, [contractsForDeposit, stakingContracts, isContractsLoading]);
-
-  const {
-    apr,
-    isLoading: isAprLoading,
-    error,
-  } = useApr(allStakingContracts, stakeAmount);
 
   return {
     apr,
