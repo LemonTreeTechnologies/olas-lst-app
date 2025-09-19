@@ -163,7 +163,10 @@ export const StakeForm = () => {
         <Disclaimer
           isOpen={isDisclaimerOpen}
           onClose={handleCloseDisclaimer}
-          onProceed={handleStake}
+          onProceed={() => {
+            handleCloseDisclaimer();
+            handleStake();
+          }}
           limit={depositoryLimits.limit}
           productName={depositoryLimits.productName}
         />
