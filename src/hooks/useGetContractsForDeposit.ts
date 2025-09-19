@@ -1,27 +1,154 @@
 import { StakingModel } from "@/utils/graphql/types";
 import { useFetchActiveModels } from "./useFetchActiveModels";
 
-const getContractWithStakeAmount = (
-  contract: StakingModel,
-  stakeAmount: bigint,
-  remainingAmount: bigint,
-) => {
-  const allocation =
-    stakeAmount < remainingAmount ? stakeAmount : remainingAmount;
-  if (allocation <= BigInt(0)) return null;
+const allocateDepositToContracts = (amount: bigint, models: StakingModel[]) => {
+  let remainingAmount = BigInt(amount);
+  const contractsForDeposit: Array<{
+    chainId: StakingModel["chainId"];
+    stakingProxy: StakingModel["stakingProxy"];
+    allocation: bigint;
+  }> = [];
 
-  return {
-    chainId: contract.chainId,
-    stakingProxy: contract.stakingProxy,
-    reminderPerSlot: contract.reminderPerSlot,
-    allocation,
-  };
+  // Create a mutable deep copy to avoid side effects on the original array.
+  const processedModels = models.map((model, index) => {
+    const newModel = { ...model };
+    if (!newModel.id) {
+      // Add a unique ID for easier tracking
+      newModel.id = `${newModel.stakingProxy}-${index}`;
+    }
+    return newModel;
+  });
+
+  while (remainingAmount > BigInt(0) && processedModels.length > 0) {
+    let allocatedThisLoop = false;
+
+    // Step 1: Find and fill a partially taken slot with the smallest remaining amount needed.
+    const partialModels = processedModels
+      .filter(
+        (model) =>
+          BigInt(model.reminderPerSlot) > BigInt(0) &&
+          BigInt(model.reminderPerSlot) < BigInt(model.stakeLimitPerSlot),
+      )
+      .sort((a, b) =>
+        BigInt(a.reminderPerSlot) < BigInt(b.reminderPerSlot) ? -1 : 1,
+      );
+
+    if (partialModels.length > 0) {
+      const contract = partialModels[0];
+      const reminderPerSlot = BigInt(contract.reminderPerSlot);
+      const allocation =
+        reminderPerSlot < remainingAmount ? reminderPerSlot : remainingAmount;
+
+      if (allocation > BigInt(0)) {
+        contractsForDeposit.push({
+          chainId: contract.chainId,
+          stakingProxy: contract.stakingProxy,
+          allocation,
+        });
+        remainingAmount -= allocation;
+        allocatedThisLoop = true;
+
+        // Update the state of the model.
+        const updatedModelIndex = processedModels.findIndex(
+          (model) => model.id === contract.id,
+        );
+        if (updatedModelIndex > -1) {
+          const newReminder = reminderPerSlot - allocation;
+          processedModels[updatedModelIndex].reminderPerSlot =
+            String(newReminder);
+          if (newReminder <= BigInt(0)) {
+            const availableSlots = BigInt(
+              processedModels[updatedModelIndex].availableSlots,
+            );
+            processedModels[updatedModelIndex].availableSlots = String(
+              availableSlots - BigInt(1),
+            );
+          }
+        }
+      }
+    }
+
+    // Step 2: If no partial slots are filled, find the biggest one that can be filled fully.
+    if (!allocatedThisLoop && remainingAmount > BigInt(0)) {
+      const fullSlotModels = processedModels
+        .filter(
+          (model) =>
+            BigInt(model.availableSlots) > BigInt(0) &&
+            BigInt(model.stakeLimitPerSlot) <= remainingAmount,
+        )
+        .sort((a, b) =>
+          BigInt(b.stakeLimitPerSlot) < BigInt(a.stakeLimitPerSlot) ? -1 : 1,
+        );
+
+      if (fullSlotModels.length > 0) {
+        const contract = fullSlotModels[0];
+        const stakeLimitPerSlot = BigInt(contract.stakeLimitPerSlot);
+
+        contractsForDeposit.push({
+          chainId: contract.chainId,
+          stakingProxy: contract.stakingProxy,
+          allocation: stakeLimitPerSlot,
+        });
+        remainingAmount -= stakeLimitPerSlot;
+        allocatedThisLoop = true;
+
+        // Decrease the available slots for the model we just filled.
+        const updatedModelIndex = processedModels.findIndex(
+          (model) => model.id === contract.id,
+        );
+        if (updatedModelIndex > -1) {
+          const availableSlots = BigInt(
+            processedModels[updatedModelIndex].availableSlots,
+          );
+          processedModels[updatedModelIndex].availableSlots = String(
+            availableSlots - BigInt(1),
+          );
+        }
+      }
+    }
+
+    // Step 3: If still not allocated, find the smallest available slot and put the remaining amount there.
+    if (!allocatedThisLoop && remainingAmount > BigInt(0)) {
+      const smallestAvailableSlotModel = processedModels
+        .filter(
+          (model) =>
+            BigInt(model.availableSlots) > BigInt(0) &&
+            BigInt(model.reminderPerSlot) > BigInt(0),
+        )
+        .sort((a, b) =>
+          BigInt(a.stakeLimitPerSlot) < BigInt(b.stakeLimitPerSlot) ? -1 : 1,
+        )[0];
+
+      if (smallestAvailableSlotModel) {
+        contractsForDeposit.push({
+          chainId: smallestAvailableSlotModel.chainId,
+          stakingProxy: smallestAvailableSlotModel.stakingProxy,
+          allocation: remainingAmount,
+        });
+
+        // Update the model to reflect the new partial fill.
+        const updatedModelIndex = processedModels.findIndex(
+          (model) => model.id === smallestAvailableSlotModel.id,
+        );
+        if (updatedModelIndex > -1) {
+          processedModels[updatedModelIndex].reminderPerSlot =
+            String(remainingAmount);
+        }
+
+        remainingAmount = BigInt(0); // All remaining amount is allocated.
+        allocatedThisLoop = true;
+      }
+    }
+
+    if (!allocatedThisLoop) {
+      break;
+    }
+  }
+
+  return contractsForDeposit;
 };
 
 export const useGetContractsForDeposit = (amount: bigint) => {
-  /**
-   * Get active staking contracts sorted by reminderPerSlot
-   */
   const { data: stakingContracts, isLoading: isContractsLoading } =
     useFetchActiveModels(
       {
@@ -39,75 +166,10 @@ export const useGetContractsForDeposit = (amount: bigint) => {
     };
   }
 
-  /**
-   * Calculate contracts with stake amount for the provided total amount
-   * Strategy:
-   * 1) Close partially taken slots first, sorted by smallest reminderPerSlot
-   * 2) Then fill empty slots ordered by smallest stakeLimitPerSlot to close more slots
-   */
-  let remainingAmount = amount;
-  const contractsForDeposit: Array<{
-    chainId: StakingModel["chainId"];
-    stakingProxy: StakingModel["stakingProxy"];
-    reminderPerSlot: StakingModel["reminderPerSlot"];
-    allocation: bigint;
-  }> = [];
-
-  const models = stakingContracts.stakingModels;
-
-  // Step 1: partially taken slots by smallest reminderPerSlot
-  const partialModels = models
-    .filter((model) => {
-      const reminder = BigInt(model.reminderPerSlot);
-      const limit = BigInt(model.stakeLimitPerSlot);
-      return reminder > BigInt(0) && reminder < limit;
-    })
-    .sort((a, b) =>
-      BigInt(a.reminderPerSlot) < BigInt(b.reminderPerSlot) ? -1 : 1,
-    );
-
-  for (const contract of partialModels) {
-    if (remainingAmount <= BigInt(0)) break;
-    const reminderPerSlot = BigInt(contract.reminderPerSlot);
-    const contractWithStakeAmount = getContractWithStakeAmount(
-      contract,
-      reminderPerSlot,
-      remainingAmount,
-    );
-    if (contractWithStakeAmount) {
-      contractsForDeposit.push(contractWithStakeAmount);
-      remainingAmount -= contractWithStakeAmount.allocation;
-    }
-  }
-
-  // Step 2: fill empty slots by smallest stakeLimitPerSlot
-  if (remainingAmount > BigInt(0)) {
-    const fullSlotModels = models
-      .slice()
-      .sort((a, b) =>
-        BigInt(a.stakeLimitPerSlot) < BigInt(b.stakeLimitPerSlot) ? -1 : 1,
-      );
-
-    for (const contract of fullSlotModels) {
-      if (remainingAmount <= BigInt(0)) break;
-
-      const stakeLimitPerSlot = BigInt(contract.stakeLimitPerSlot);
-      const availableSlots = Number(contract.availableSlots);
-
-      for (let i = 0; i < availableSlots; i++) {
-        if (remainingAmount <= BigInt(0)) break;
-        const contractWithStakeAmount = getContractWithStakeAmount(
-          contract,
-          stakeLimitPerSlot,
-          remainingAmount,
-        );
-        if (contractWithStakeAmount) {
-          contractsForDeposit.push(contractWithStakeAmount);
-          remainingAmount -= contractWithStakeAmount.allocation;
-        }
-      }
-    }
-  }
+  const contractsForDeposit = allocateDepositToContracts(
+    amount,
+    stakingContracts.stakingModels,
+  );
 
   return {
     contracts: contractsForDeposit,
