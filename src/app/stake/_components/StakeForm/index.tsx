@@ -78,9 +78,9 @@ export const StakeForm = () => {
         wasDisclaimerShown.current = true;
         return;
       }
-    } else {
-      handleStake();
     }
+
+    handleStake();
   }, [amountInWei, depositoryLimits, handleStake]);
 
   useRefetchBalanceAfterUpdate(
