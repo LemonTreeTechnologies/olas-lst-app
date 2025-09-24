@@ -7,6 +7,7 @@ export type GetStakingModelsQueryParams = {
   orderBy?: string;
   orderDirection?: string;
   reminderPerSlot_gte?: number;
+  usedSlots_gte?: number;
 };
 
 export type StakingModel = {

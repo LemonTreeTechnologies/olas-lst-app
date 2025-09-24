@@ -164,7 +164,7 @@ export const useGetContractsForRedeem = (amount: bigint) => {
   const { data: stakingContracts, isLoading: isContractsLoading } =
     useFetchActiveModels(
       {
-        reminderPerSlot_gte: 0,
+        usedSlots_gte: 1,
         orderBy: "reminderPerSlot",
         orderDirection: "asc",
       },

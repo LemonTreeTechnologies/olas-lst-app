@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FC } from "react";
 import { LuWallet } from "react-icons/lu";
 import { Button } from "../Button";
-import { formatUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { TokenType } from "@/types";
 import { TOKEN_LOGOS } from "@/constants";
 
@@ -51,23 +51,23 @@ export const TokenInput: FC<TokenInputProps> = ({
 
             // Allow only numbers and a single decimal point
             if (/^\d*\.?\d*$/.test(inputValue)) {
-              const parsedValue = parseFloat(inputValue);
+              if (inputValue === "") {
+                onChange("");
+                return;
+              }
 
-              // Check if the value is within the valid range
-              if (!isNaN(parsedValue)) {
-                let newValue = parsedValue.toString();
+              try {
+                // Ensure valid decimal input (up to 18 decimals)
+                const parsed = parseUnits(inputValue, 18);
 
-                // Enforce limits only if rawBalance is defined and not NaN
-                if (rawBalanceInEth) {
-                  newValue =
-                    rawBalanceInEth < parsedValue
-                      ? rawBalanceInEth.toString()
-                      : Math.max(0, parsedValue).toString();
+                // Do not allow entering values higher than balance
+                if (rawBalance && parsed > rawBalance) {
+                  onChange(formatUnits(rawBalance, 18));
+                } else {
+                  onChange(inputValue);
                 }
-
-                onChange(newValue); // Update with the clamped value as a string
-              } else if (inputValue === "") {
-                onChange(""); // Allow clearing the input
+              } catch {
+                // ignore invalid (too many decimals, etc.)
               }
             }
           }}
@@ -80,8 +80,12 @@ export const TokenInput: FC<TokenInputProps> = ({
             key={percentage}
             disabled={!rawBalanceInEth}
             onClick={
-              rawBalanceInEth
-                ? () => onChange(`${rawBalanceInEth * (percentage / 100)}`)
+              rawBalance
+                ? () => {
+                    const amount =
+                      (rawBalance * BigInt(percentage)) / BigInt(100);
+                    onChange(formatUnits(amount, 18)); // precise decimal string
+                  }
                 : undefined
             }
           >

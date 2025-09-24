@@ -14,6 +14,7 @@ const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
     $orderBy: String
     $orderDirection: String
     $reminderPerSlot_gte: Int
+    $usedSlots_gte: Int
   ) {
     stakingModels(
       orderBy: $orderBy
@@ -21,6 +22,7 @@ const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
       where: {
         status: $status
         ${params.reminderPerSlot_gte ? "reminderPerSlot_gte: $reminderPerSlot_gte" : ""}
+        ${params.usedSlots_gte ? "usedSlots_gte: $usedSlots_gte" : ""}
       }
     ) {
       id

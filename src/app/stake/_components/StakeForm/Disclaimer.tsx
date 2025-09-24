@@ -6,14 +6,14 @@ import { formatUnits } from "viem/utils";
 type DisclaimerProps = {
   isOpen: boolean;
   onClose: () => void;
-  onProceed: () => void;
+  onReset: () => void;
   limit: number | bigint;
   productName: string;
 };
 export const Disclaimer = ({
   isOpen,
   onClose,
-  onProceed,
+  onReset,
   limit,
   productName,
 }: DisclaimerProps) => {
@@ -33,8 +33,8 @@ export const Disclaimer = ({
           variant: "secondary",
         },
         {
-          label: "I acknowledge",
-          onClick: onProceed,
+          label: "Reset to the limit",
+          onClick: onReset,
           variant: "primary",
         },
       ]}

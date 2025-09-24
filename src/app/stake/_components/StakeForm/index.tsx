@@ -1,6 +1,6 @@
 "use client";
 
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useCallback, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
@@ -45,7 +45,6 @@ export const StakeForm = () => {
     useDepositoryLimits();
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const handleCloseDisclaimer = () => setIsDisclaimerOpen(false);
-  const wasDisclaimerShown = useRef(false);
 
   const { availableOlasBalance, availableOlasFormattedBalance } =
     useOlasBalances(address, chainId);
@@ -72,10 +71,9 @@ export const StakeForm = () => {
 
   const handleStakeWithDisclaimer = useCallback(() => {
     const hasLimit = depositoryLimits?.limit !== Infinity;
-    if (!wasDisclaimerShown.current && hasLimit && depositoryLimits) {
+    if (hasLimit && depositoryLimits) {
       if (amountInWei > depositoryLimits.limit) {
         setIsDisclaimerOpen(true);
-        wasDisclaimerShown.current = true;
         return;
       }
     }
@@ -112,7 +110,7 @@ export const StakeForm = () => {
             label: "Exchange rate",
             value: getStakeValueContent({
               amount,
-              placeholder: "1 OLAS = 1 stOLAS",
+              placeholder: "--",
               isLoading:
                 isPreviewDepositLoading ||
                 !rawDeposit ||
@@ -163,9 +161,9 @@ export const StakeForm = () => {
         <Disclaimer
           isOpen={isDisclaimerOpen}
           onClose={handleCloseDisclaimer}
-          onProceed={() => {
+          onReset={() => {
+            setAmount(`${formatUnits(BigInt(depositoryLimits.limit), 18)}`);
             handleCloseDisclaimer();
-            handleStake();
           }}
           limit={depositoryLimits.limit}
           productName={depositoryLimits.productName}
