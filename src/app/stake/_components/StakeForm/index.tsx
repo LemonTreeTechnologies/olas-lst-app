@@ -1,7 +1,7 @@
 "use client";
 
 import { formatUnits, parseUnits } from "viem";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
