@@ -26,7 +26,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold font-gradient text-center leading-tight overflow-visible">
             Liquid staking with stOLAS
           </h1>
-          <p className="font-secondary text-lg text-center">
+          <p className="font-tertiary text-lg text-center">
             Scalable rewards and enhanced strategies powered by a modular
             framework.
           </p>
@@ -39,14 +39,14 @@ export default function Home() {
                   formattedStTotalAssets
                 )}
               </span>
-              <span className="font-secondary">TVL (OLAS)</span>
+              <span className="font-tertiary">TVL (OLAS)</span>
             </div>
 
             <div className="flex flex-col gap-1 text-center">
               <span className="font-gradient text-4xl font-semibold">
                 {isAprLoading ? <StatisticSkeleton /> : `${apr}%`}
               </span>
-              <span className="font-secondary">APR</span>
+              <span className="font-tertiary">APR</span>
             </div>
           </div>
         </div>

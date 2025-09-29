@@ -23,9 +23,9 @@ const CopyButton = ({ address }: Pick<WalletProps, "address">) => {
   return (
     <button className="rounded cursor-pointer" onClick={handleCopy}>
       {copied ? (
-        <TbCopyCheckFilled className="text-xl font-secondary" />
+        <TbCopyCheckFilled className="text-xl font-tertiary" />
       ) : (
-        <TbCopy className="text-xl font-secondary" />
+        <TbCopy className="text-xl font-tertiary" />
       )}
     </button>
   );
@@ -40,7 +40,7 @@ const LogoutButton = () => {
 
   return (
     <button className="rounded cursor-pointer" onClick={handleLogout}>
-      <LuLogOut className="text-xl font-secondary" />
+      <LuLogOut className="text-xl font-tertiary" />
     </button>
   );
 };
@@ -50,7 +50,7 @@ export const Wallet = ({ address, chainId, children }: WalletProps) => {
     <div className="w-full mx-auto overflow-hidden rounded-2xl border border-[#273346] bg-[linear-gradient(180deg,_rgba(101,206,241,0.15)_0%,_rgba(54,77,237,0.15)_100%)] shadow-lg text-white">
       <div className="flex items-stretch justify-between">
         <div className="flex flex-auto items-center bg-white/5 gap-2 px-6 py-4">
-          <LuWallet className="text-xl font-secondary" />
+          <LuWallet className="text-xl font-tertiary" />
           <span>{truncateAddress(address)}</span>
         </div>
         <div className="flex items-stretch gap-[1px]">
@@ -63,7 +63,7 @@ export const Wallet = ({ address, chainId, children }: WalletProps) => {
               href={`${SCAN_URLS[chainId]}/address/${address}`}
               target="_blank"
             >
-              <LuExternalLink className="text-xl font-secondary" />
+              <LuExternalLink className="text-xl font-tertiary" />
             </a>
           </div>
           <div className="flex items-center justify-center w-[56px] bg-white/5">

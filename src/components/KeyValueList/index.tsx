@@ -15,7 +15,7 @@ export const KeyValueList = ({ items }: KeyValueListProps) => {
           key={index}
           className="flex justify-between border-b border-[#FFFFFF0D] pb-1"
         >
-          <span className="font-secondary">{item.label}</span>
+          <span className="font-tertiary">{item.label}</span>
           <span className="font-semibold">{item.value}</span>
         </div>
       ))}
