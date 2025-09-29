@@ -1,5 +1,5 @@
 import { SCAN_URLS } from "@/constants";
-import { LuArrowUpRight, LuExternalLink } from "react-icons/lu";
+import { ExternalLink } from "../ExternalLink";
 
 type TxnLinkProps = {
   chainId: number;
@@ -7,18 +7,11 @@ type TxnLinkProps = {
   short?: boolean;
 };
 
-export const TxnLink = ({ chainId, hash, short }: TxnLinkProps) => (
-  <a
-    href={`${SCAN_URLS[chainId]}/tx/${hash}`}
-    target="_blank"
-    className="inline-flex items-center gap-1 text-blue-400"
-  >
-    {short ? (
-      <LuExternalLink className="text-xl font-secondary" />
-    ) : (
-      <>
-        Txn details <LuArrowUpRight />
-      </>
-    )}
-  </a>
-);
+export const TxnLink = ({ chainId, hash, short }: TxnLinkProps) => {
+  const linkProps = short
+    ? { short: true }
+    : { text: "Txn details", className: "text-blue-400" };
+  return (
+    <ExternalLink href={`${SCAN_URLS[chainId]}/tx/${hash}`} {...linkProps} />
+  );
+};
