@@ -51,3 +51,7 @@ export type Staker = {
     withdrawTime: string;
   }[];
 };
+
+export type Global = {
+  totalStakers: number;
+};

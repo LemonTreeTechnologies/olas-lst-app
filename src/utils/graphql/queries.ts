@@ -5,6 +5,7 @@ import {
   GetStakingModelsQueryParams,
   GetStakerParams,
   Staker,
+  Global,
 } from "./types";
 import { OLAS_LST_SUBGRAPH_URL } from "@/constants";
 
@@ -65,6 +66,14 @@ const stakerQuery = `
   }
 `;
 
+const globalQuery = `
+  query GetGlobal {
+    global(id:"") {
+      totalStakers
+    }
+  }
+`;
+
 export const getStakingModels = async (params: GetStakingModelsQueryParams) =>
   request<{ stakingModels: StakingModel[] }>(
     OLAS_LST_SUBGRAPH_URL,
@@ -78,3 +87,6 @@ export const getStaker = async (params: GetStakerParams) =>
     stakerQuery,
     params,
   );
+
+export const getGlobal = async () =>
+  request<{ global: Global | null }>(OLAS_LST_SUBGRAPH_URL, globalQuery);

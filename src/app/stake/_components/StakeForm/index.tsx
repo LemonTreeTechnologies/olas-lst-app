@@ -24,17 +24,17 @@ import { useDepositoryLimits } from "@/hooks/useDepositoryLimits";
 import { Disclaimer } from "./Disclaimer";
 
 const getStakeValueContent = ({
-  amount,
+  rawValue,
   placeholder,
   isLoading,
   content,
 }: {
-  amount: string;
+  rawValue: string;
   placeholder: string;
   isLoading: boolean;
   content: string;
 }) => {
-  if (!amount) return placeholder;
+  if (!rawValue) return placeholder;
   if (isLoading) return <Spinner />;
   return content;
 };
@@ -100,7 +100,7 @@ export const StakeForm = () => {
           {
             label: "You will receive",
             value: getStakeValueContent({
-              amount,
+              rawValue: amount,
               placeholder: "0.00 stOLAS",
               isLoading: isPreviewDepositLoading || debouncedAmount !== amount,
               content: `${formattedDeposit} stOLAS`,
@@ -109,7 +109,7 @@ export const StakeForm = () => {
           {
             label: "Exchange rate",
             value: getStakeValueContent({
-              amount,
+              rawValue: amount,
               placeholder: "--",
               isLoading:
                 isPreviewDepositLoading ||
