@@ -31,7 +31,7 @@ export const DefaultView = ({
     <>
       <div className="flex flex-col divide-y divide-[#FFFFFF1A]">
         {!isLoading && requests.length === 0 ? (
-          <div className="text-center text-lg my-8 font-secondary">
+          <div className="text-center text-lg my-8 font-tertiary">
             No withdrawal requests found
           </div>
         ) : (

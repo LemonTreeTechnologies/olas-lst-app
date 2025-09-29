@@ -28,7 +28,7 @@ export const TokenInput: FC<TokenInputProps> = ({
     <div className="space-y-2 w-full">
       <div className="flex justify-between items-center text-white font-semibold">
         <span>{`${token} amount`}</span>
-        <div className="flex items-center gap-1 font-secondary">
+        <div className="flex items-center gap-1 font-tertiary">
           <span>{balance}</span>
           <LuWallet size={16} />
         </div>

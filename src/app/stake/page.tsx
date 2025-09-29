@@ -1,3 +1,4 @@
+import { Faq } from "./_components/Faq";
 import { StakeForm } from "./_components/StakeForm";
 import { Statistics } from "./_components/Statistics";
 import { WalletInfo } from "./_components/WalletInfo";
@@ -8,6 +9,7 @@ const Page = () => {
       <WalletInfo />
       <StakeForm />
       <Statistics />
+      <Faq />
     </div>
   );
 };
