@@ -24,7 +24,7 @@ export const useDepositoryLimits = () => {
       });
 
       if (productType === PRODUCT_TYPE.Final) {
-        return { productName: "Final", limit: Infinity };
+        return { productName: "Final", limit: null };
       } else {
         if (![PRODUCT_TYPE.Alpha, PRODUCT_TYPE.Beta].includes(productType)) {
           throw new Error(

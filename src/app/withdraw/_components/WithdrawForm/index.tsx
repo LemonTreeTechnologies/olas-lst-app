@@ -39,10 +39,7 @@ const getWithdrawValueContent = ({
 
 export const WithdrawForm = () => {
   const { isConnected: isAccountConnected, address, chainId } = useAccount();
-  const { stOlasFormattedBalance, stOlasBalance } = useOlasBalances(
-    address,
-    chainId,
-  );
+  const { stOlasBalance } = useOlasBalances(address, chainId);
 
   const [amount, setAmount] = useState("");
   const debouncedAmount = useDebounce(amount, 500);
@@ -81,7 +78,6 @@ export const WithdrawForm = () => {
         value={amount}
         onChange={setAmount}
         token="stOLAS"
-        balance={stOlasFormattedBalance}
         rawBalance={stOlasBalance}
       />
       <KeyValueList

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { FC } from "react";
-import { LuWallet } from "react-icons/lu";
 import { Button } from "../Button";
 import { formatUnits, parseUnits } from "viem";
 import { TokenType } from "@/types";
@@ -10,8 +9,8 @@ interface TokenInputProps {
   value: string;
   onChange: (value: string) => void;
   token: TokenType;
-  balance: string;
   rawBalance: bigint | undefined;
+  isError?: boolean;
 }
 
 const PERCENTAGES = [25, 50, 75, 100];
@@ -20,21 +19,38 @@ export const TokenInput: FC<TokenInputProps> = ({
   value,
   onChange,
   token,
-  balance,
   rawBalance,
+  isError,
 }) => {
-  const rawBalanceInEth = rawBalance ? Number(formatUnits(rawBalance, 18)) : 0;
   return (
     <div className="space-y-2 w-full">
       <div className="flex justify-between items-center text-white font-semibold">
         <span>{`${token} amount`}</span>
-        <div className="flex items-center gap-1 font-tertiary">
-          <span>{balance}</span>
-          <LuWallet size={16} />
+        <div className="flex gap-2 justify-end">
+          {PERCENTAGES.map((percentage) => (
+            <Button
+              variant="link"
+              key={percentage}
+              disabled={!rawBalance}
+              onClick={
+                rawBalance
+                  ? () => {
+                      const amount =
+                        (rawBalance * BigInt(percentage)) / BigInt(100);
+                      onChange(formatUnits(amount, 18)); // precise decimal string
+                    }
+                  : undefined
+              }
+            >
+              {`${percentage}%`}
+            </Button>
+          ))}
         </div>
       </div>
 
-      <div className="flex items-center bg-[#FFFFFF0D] border border-white/10 rounded-xl p-3 gap-2">
+      <div
+        className={`flex items-center bg-[#FFFFFF0D] border rounded-xl p-3 gap-2 ${isError ? "animate-shake border-rose-400" : "border-white/10 "}`}
+      >
         <Image
           src={TOKEN_LOGOS[token]}
           alt={`${token} logo`}
@@ -72,26 +88,6 @@ export const TokenInput: FC<TokenInputProps> = ({
             }
           }}
         />
-      </div>
-      <div className="flex gap-2 justify-end">
-        {PERCENTAGES.map((percentage) => (
-          <Button
-            variant="link"
-            key={percentage}
-            disabled={!rawBalanceInEth}
-            onClick={
-              rawBalance
-                ? () => {
-                    const amount =
-                      (rawBalance * BigInt(percentage)) / BigInt(100);
-                    onChange(formatUnits(amount, 18)); // precise decimal string
-                  }
-                : undefined
-            }
-          >
-            {`${percentage}%`}
-          </Button>
-        ))}
       </div>
     </div>
   );

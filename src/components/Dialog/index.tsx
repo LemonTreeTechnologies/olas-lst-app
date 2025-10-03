@@ -34,7 +34,7 @@ export const Dialog = ({
       />
 
       {/* Panel */}
-      <div className="relative z-10 transform overflow-hidden rounded-lg bg-zinc-800 text-left shadow-xl outline outline-1 -outline-offset-1 outline-white/10 transition-all w-full max-w-lg">
+      <div className="relative z-10 transform overflow-hidden rounded-2xl bg-zinc-800 text-left shadow-xl outline outline-1 -outline-offset-1 outline-white/10 transition-all w-full max-w-md">
         <div className="flex justify-between border-b border-white/10 p-6">
           <h3 className="text-xl font-semibold text-white">{title}</h3>
           <MdClose className="text-2xl cursor-pointer" onClick={onClose} />
