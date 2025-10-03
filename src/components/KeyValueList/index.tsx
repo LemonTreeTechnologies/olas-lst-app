@@ -9,11 +9,11 @@ type KeyValueListProps = {
 
 export const KeyValueList = ({ items }: KeyValueListProps) => {
   return (
-    <div className="space-y-4">
+    <div>
       {items.map((item, index) => (
         <div
           key={index}
-          className="flex justify-between border-b border-[#FFFFFF0D] pb-1"
+          className="flex justify-between [&:not(:last-child)]:border-b border-white/10 pt-[10px] pb-[10px]"
         >
           <span className="font-tertiary">{item.label}</span>
           <span className="font-semibold">{item.value}</span>

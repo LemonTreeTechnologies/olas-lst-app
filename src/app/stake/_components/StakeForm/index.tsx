@@ -1,7 +1,7 @@
 "use client";
 
 import { formatUnits, parseUnits } from "viem";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
@@ -22,6 +22,7 @@ import { SCOPE_KEYS } from "@/constants/scopeKeys";
 import { Status } from "./Status";
 import { useDepositoryLimits } from "@/hooks/useDepositoryLimits";
 import { Disclaimer } from "./Disclaimer";
+import { LuCircleAlert } from "react-icons/lu";
 
 const getStakeValueContent = ({
   rawValue,
@@ -39,15 +40,36 @@ const getStakeValueContent = ({
   return content;
 };
 
+const LimitCaption = ({
+  limit,
+  overLimit,
+}: {
+  limit: bigint;
+  overLimit: boolean;
+}) => {
+  const text = `Maximum per transaction: ${formatUnits(limit, 18)} OLAS`;
+
+  if (overLimit) {
+    return (
+      <div className="flex gap-1 items-center text-rose-400">
+        <LuCircleAlert />
+        {text}
+      </div>
+    );
+  }
+
+  return <span className="font-tertiary">{text}</span>;
+};
+
 export const StakeForm = () => {
   const { isConnected: isAccountConnected, chainId, address } = useAccount();
   const { data: depositoryLimits, isLoading: isDepositoryLimitsLoading } =
     useDepositoryLimits();
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const handleCloseDisclaimer = () => setIsDisclaimerOpen(false);
+  const isDisclaimerShown = useRef(false);
 
-  const { availableOlasBalance, availableOlasFormattedBalance } =
-    useOlasBalances(address, chainId);
+  const { availableOlasBalance } = useOlasBalances(address, chainId);
 
   const [amount, setAmount] = useState("");
   const debouncedAmount = useDebounce(amount, 500);
@@ -70,31 +92,39 @@ export const StakeForm = () => {
     useStake(contracts, amountInWei, handleFinish);
 
   const handleStakeWithDisclaimer = useCallback(() => {
-    const hasLimit = depositoryLimits?.limit !== Infinity;
-    if (hasLimit && depositoryLimits) {
-      if (amountInWei > depositoryLimits.limit) {
-        setIsDisclaimerOpen(true);
-        return;
-      }
+    const hasLimit = depositoryLimits && depositoryLimits.limit !== null;
+    if (!isDisclaimerShown.current && hasLimit && depositoryLimits) {
+      setIsDisclaimerOpen(true);
+      isDisclaimerShown.current = true;
+      return;
     }
 
     handleStake();
-  }, [amountInWei, depositoryLimits, handleStake]);
+  }, [depositoryLimits, handleStake]);
 
   useRefetchBalanceAfterUpdate(
     depositHash,
     SCOPE_KEYS.stOlas(address, chainId),
   );
 
+  const limit = depositoryLimits?.limit
+    ? BigInt(depositoryLimits.limit)
+    : undefined;
+  const overLimit =
+    limit && amount ? BigInt(parseUnits(amount, 18)) > limit : false;
+
   return (
     <Card title="Stake OLAS">
-      <TokenInput
-        value={amount}
-        onChange={setAmount}
-        token="OLAS"
-        balance={availableOlasFormattedBalance}
-        rawBalance={availableOlasBalance}
-      />
+      <div className="flex flex-col gap-2">
+        <TokenInput
+          value={amount}
+          onChange={setAmount}
+          token="OLAS"
+          rawBalance={availableOlasBalance}
+          isError={overLimit}
+        />
+        {limit && <LimitCaption limit={limit} overLimit={overLimit} />}
+      </div>
       <KeyValueList
         items={[
           {
@@ -149,7 +179,8 @@ export const StakeForm = () => {
                 isDepositoryLimitsLoading ||
                 !amountInWei ||
                 debouncedAmount !== amount ||
-                isBusy
+                isBusy ||
+                overLimit
               }
             >
               Stake
@@ -157,16 +188,14 @@ export const StakeForm = () => {
           </div>
         </>
       )}
-      {depositoryLimits && depositoryLimits.limit !== Infinity && (
+      {depositoryLimits && depositoryLimits.limit !== null && (
         <Disclaimer
           isOpen={isDisclaimerOpen}
           onClose={handleCloseDisclaimer}
-          onReset={() => {
-            setAmount(`${formatUnits(BigInt(depositoryLimits.limit), 18)}`);
+          onProceed={() => {
             handleCloseDisclaimer();
+            handleStake();
           }}
-          limit={depositoryLimits.limit}
-          productName={depositoryLimits.productName}
         />
       )}
     </Card>

@@ -1,22 +1,12 @@
 import { Dialog } from "@/components/Dialog";
-import { formatNumber } from "@/utils/format";
 import { MdOutlineWarningAmber } from "react-icons/md";
-import { formatUnits } from "viem/utils";
 
 type DisclaimerProps = {
   isOpen: boolean;
   onClose: () => void;
-  onReset: () => void;
-  limit: number | bigint;
-  productName: string;
+  onProceed: () => void;
 };
-export const Disclaimer = ({
-  isOpen,
-  onClose,
-  onReset,
-  limit,
-  productName,
-}: DisclaimerProps) => {
+export const Disclaimer = ({ isOpen, onClose, onProceed }: DisclaimerProps) => {
   return (
     <Dialog
       isOpen={isOpen}
@@ -33,17 +23,12 @@ export const Disclaimer = ({
           variant: "secondary",
         },
         {
-          label: "Reset to the limit",
-          onClick: onReset,
+          label: "Acknowledge and Continue",
+          onClick: onProceed,
           variant: "primary",
         },
       ]}
     >
-      The deposit amount is limited{" "}
-      <b>to {formatNumber(Number(formatUnits(BigInt(limit), 18)))} OLAS</b> in{" "}
-      {productName}.
-      <br />
-      <br />
       This product is provided &quot;as is&quot;, without warranty of any kind.
       Use of this product is at your own risk.
     </Dialog>
