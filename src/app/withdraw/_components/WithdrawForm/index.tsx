@@ -8,10 +8,7 @@ import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
-import {
-  useOlasBalances,
-  useRefetchBalanceAfterUpdate,
-} from "@/hooks/useFetchBalance";
+import { useOlasBalances } from "@/hooks/useFetchBalance";
 import { useGetContractsForRedeem } from "@/hooks/useGetContractsForRedeem";
 import { useDebounce } from "@uidotdev/usehooks";
 import { formatNumber } from "@/utils/format";
@@ -20,6 +17,7 @@ import { useRequestWithdrawal } from "./hooks";
 import { usePreviewRedeem } from "@/hooks/usePreviewRedeem";
 import { Status } from "./Status";
 import { SCOPE_KEYS } from "@/constants/scopeKeys";
+import { useRefetchAfterUpdate } from "@/hooks/useRefetchAfterUpdate";
 
 const getWithdrawValueContent = ({
   amount,
@@ -67,10 +65,10 @@ export const WithdrawForm = () => {
     error,
   } = useRequestWithdrawal(contracts, amountInWei, handleFinish);
 
-  useRefetchBalanceAfterUpdate(
-    requestHash,
+  useRefetchAfterUpdate(requestHash, [
     SCOPE_KEYS.stOlas(address, chainId),
-  );
+    SCOPE_KEYS.staker({ id: address }),
+  ]);
 
   return (
     <Card title="Request withdrawal">
