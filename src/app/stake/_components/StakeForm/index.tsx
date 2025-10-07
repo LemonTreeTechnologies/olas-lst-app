@@ -8,10 +8,7 @@ import { KeyValueList } from "@/components/KeyValueList";
 import { WalletConnectButton } from "@/components/layouts/WalletConnectButton";
 import { Spinner } from "@/components/loaders/Spinner";
 import { TokenInput } from "@/components/TokenInput";
-import {
-  useOlasBalances,
-  useRefetchBalanceAfterUpdate,
-} from "@/hooks/useFetchBalance";
+import { useOlasBalances } from "@/hooks/useFetchBalance";
 import { useGetContractsForDeposit } from "@/hooks/useGetContractsForDeposit";
 import { useDebounce } from "@uidotdev/usehooks";
 import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
@@ -23,6 +20,7 @@ import { Status } from "./Status";
 import { useDepositoryLimits } from "@/hooks/useDepositoryLimits";
 import { Disclaimer } from "./Disclaimer";
 import { LuCircleAlert } from "react-icons/lu";
+import { useRefetchAfterUpdate } from "@/hooks/useRefetchAfterUpdate";
 
 const getStakeValueContent = ({
   rawValue,
@@ -102,10 +100,10 @@ export const StakeForm = () => {
     handleStake();
   }, [depositoryLimits, handleStake]);
 
-  useRefetchBalanceAfterUpdate(
-    depositHash,
+  useRefetchAfterUpdate(depositHash, [
     SCOPE_KEYS.stOlas(address, chainId),
-  );
+    SCOPE_KEYS.stOlasStatistics,
+  ]);
 
   const limit = depositoryLimits?.limit
     ? BigInt(depositoryLimits.limit)

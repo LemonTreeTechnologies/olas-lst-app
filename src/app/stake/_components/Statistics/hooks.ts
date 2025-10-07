@@ -1,6 +1,7 @@
 import { useReadContracts } from "wagmi";
 import { ST_OLAS_ABI, ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
+import { SCOPE_KEYS } from "@/constants/scopeKeys";
 
 const ST_OLAS_FUNCTIONS = [
   "stakedBalance",
@@ -18,6 +19,7 @@ export const useStOlasStatistics = () => {
       chainId: DEFAULT_CHAIN_ID,
       functionName,
     })),
+    scopeKey: SCOPE_KEYS.stOlasStatistics,
   });
 
   const [

@@ -1,12 +1,10 @@
-import { useReadContract, useWaitForTransactionReceipt } from "wagmi";
+import { useReadContract } from "wagmi";
 import { erc20Abi, formatUnits } from "viem";
 import { formatNumber } from "@/utils/format";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import { OLAS_ADDRESSES } from "@/constants/contracts/olas";
 import { ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
 import { SCOPE_KEYS } from "@/constants/scopeKeys";
-import { queryClient } from "@/context/ReownAppKitProvider";
-import { useEffect, useRef } from "react";
 
 export const useFetchBalance = ({
   walletAddress,
@@ -94,32 +92,4 @@ export const useOlasBalances = (
     availableOlasFormattedBalance,
     isLoading: isOlasBalanceLoading || isStOlasBalanceLoading,
   };
-};
-
-export const useRefetchBalanceAfterUpdate = (
-  updateHash: `0x${string}` | undefined,
-  balanceScopeKey: string,
-) => {
-  const reFetched = useRef(false);
-
-  const { isSuccess } = useWaitForTransactionReceipt({
-    chainId: DEFAULT_CHAIN_ID,
-    hash: updateHash,
-  });
-
-  useEffect(() => {
-    reFetched.current = false;
-  }, [updateHash]);
-
-  useEffect(() => {
-    if (reFetched.current) return;
-    if (isSuccess) {
-      queryClient.refetchQueries({
-        predicate: (query) =>
-          balanceScopeKey ===
-          (query.queryKey[1] as Record<string, string>)?.scopeKey,
-      });
-      reFetched.current = true;
-    }
-  }, [balanceScopeKey, isSuccess]);
 };
