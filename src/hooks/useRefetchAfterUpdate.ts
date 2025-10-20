@@ -18,8 +18,6 @@ export const useRefetchAfterUpdate = (
     reFetched.current = false;
   }, [updateHash]);
 
-  console.log("queryClient", queryClient.getQueryCache());
-
   useEffect(() => {
     if (reFetched.current) return;
     if (isSuccess) {
