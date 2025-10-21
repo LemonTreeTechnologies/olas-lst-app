@@ -56,14 +56,8 @@ export const WithdrawForm = () => {
     setAmount("");
   }, []);
 
-  const {
-    handleRequestToWithdraw,
-    status,
-    isBusy,
-    approveHash,
-    requestHash,
-    error,
-  } = useRequestWithdrawal(contracts, amountInWei, handleFinish);
+  const { handleRequestToWithdraw, status, isBusy, requestHash, error } =
+    useRequestWithdrawal(contracts, amountInWei, handleFinish);
 
   useRefetchAfterUpdate(requestHash, [
     SCOPE_KEYS.stOlas(address, chainId),
@@ -118,7 +112,6 @@ export const WithdrawForm = () => {
           <Status
             status={status}
             chainId={chainId}
-            approveHash={approveHash}
             requestHash={requestHash}
             error={error}
           />
