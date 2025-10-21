@@ -1,10 +1,8 @@
 import { Address } from "viem";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useWriteContract } from "wagmi";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
-import { useTokenApprove } from "@/hooks/useTokenApprove";
 import { ContractForDeposit } from "@/types";
-import { ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
 import {
   TREASURY_ABI,
   TREASURY_ADDRESSES,
@@ -16,24 +14,6 @@ export const useRequestWithdrawal = (
   amount: bigint,
   onFinish: () => void,
 ) => {
-  const [isRequestWithdrawalLoading, setIsRequestWithdrawalLoading] =
-    useState(false);
-  const [isRequestStarted, setIsRequestStarted] = useState(false);
-
-  // check allowance and approve
-  const {
-    hash: approveHash,
-    isLoading,
-    isApprovalSuccessOrNotNeeded,
-    error: approveError,
-    approve,
-  } = useTokenApprove({
-    erc20: {
-      token: ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID],
-      spender: TREASURY_ADDRESSES[DEFAULT_CHAIN_ID],
-    },
-  });
-
   // request withdrawal
   const {
     data: requestHash,
@@ -45,25 +25,9 @@ export const useRequestWithdrawal = (
 
   const handleRequestToWithdraw = useCallback(async () => {
     if (isRequestLoading) return;
-    setIsRequestWithdrawalLoading(true);
 
     try {
       reset();
-
-      // check allowance first
-      await approve(amount);
-    } catch {
-      setIsRequestWithdrawalLoading(false);
-    }
-  }, [amount, approve, isRequestLoading, reset]);
-
-  useEffect(() => {
-    if (
-      isRequestWithdrawalLoading &&
-      isApprovalSuccessOrNotNeeded &&
-      !isRequestStarted
-    ) {
-      setIsRequestStarted(true);
 
       const chainIds: bigint[] = [];
       const stakingProxies: Address[] = [];
@@ -90,59 +54,33 @@ export const useRequestWithdrawal = (
         ],
         value: BigInt(0),
       });
+    } catch (error) {
+      console.error("Error requesting withdrawal:", error);
     }
-  }, [
-    amount,
-    contracts,
-    isApprovalSuccessOrNotNeeded,
-    isRequestStarted,
-    isRequestWithdrawalLoading,
-    writeContract,
-  ]);
+  }, [amount, contracts, isRequestLoading, reset, writeContract]);
 
-  // Reset states once request finished
+  // Call onFinish when request is successful
   useEffect(() => {
-    if (isRequestWithdrawalLoading && isRequestStarted && !isRequestLoading) {
-      setIsRequestWithdrawalLoading(false);
-      setIsRequestStarted(false);
-
-      if (requestHash) {
-        onFinish();
-      }
+    if (requestHash) {
+      onFinish();
     }
-  }, [
-    isRequestLoading,
-    isRequestStarted,
-    isRequestWithdrawalLoading,
-    requestHash,
-    onFinish,
-  ]);
+  }, [requestHash, onFinish]);
 
-  const baseError = approveError || requestError;
-
-  const status: RequestWithdrawalStatus = baseError
+  const status: RequestWithdrawalStatus = requestError
     ? "error"
-    : isRequestWithdrawalLoading && isLoading && !approveHash
-      ? "approving"
-      : isRequestWithdrawalLoading &&
-          approveHash &&
-          !isApprovalSuccessOrNotNeeded
-        ? "approved"
-        : isRequestWithdrawalLoading && isRequestLoading && !requestHash
-          ? "requesting"
-          : requestHash
-            ? "requested"
-            : "idle";
+    : isRequestLoading && !requestHash
+      ? "requesting"
+      : requestHash
+        ? "requested"
+        : "idle";
 
-  const isBusy =
-    status === "approving" || status === "approved" || status === "requesting";
+  const isBusy = status === "requesting";
 
   return {
     handleRequestToWithdraw,
     status,
     isBusy,
-    approveHash,
     requestHash,
-    error: baseError,
+    error: requestError,
   };
 };

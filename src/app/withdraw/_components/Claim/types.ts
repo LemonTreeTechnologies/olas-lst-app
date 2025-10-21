@@ -1,7 +1,5 @@
 export type FInalizeWithdrawalStatus =
   | "idle"
-  | "approving"
-  | "approved"
   | "finalizing"
   | "finalized"
   | "error";
