@@ -1,36 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { useWriteContract } from "wagmi";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
-import { useTokenApprove } from "@/hooks/useTokenApprove";
 import {
   TREASURY_ABI,
   TREASURY_ADDRESSES,
 } from "@/constants/contracts/treasury";
 import { FInalizeWithdrawalStatus } from "./types";
 
-export const useFinalizeWithdrawal = (
-  requestId: bigint,
-  amount: bigint,
-  onFinish: () => void,
-) => {
-  const [isFinalizeWithdrawalLoading, setIsFinalizeWithdrawalLoading] =
-    useState(false);
-  const [isFinalizeStarted, setIsFinalizeStarted] = useState(false);
+export const useFinalizeWithdrawal = () => {
+  const [claimedRequestIds, setClaimedRequestIds] = useState<Set<string>>(
+    new Set(),
+  );
 
-  // check allowance and approve
-  const {
-    hash: approveHash,
-    isLoading,
-    isApprovalSuccessOrNotNeeded,
-    error: approveError,
-    approve,
-  } = useTokenApprove({
-    erc6909: {
-      requestId: requestId,
-    },
-  });
-
-  // finalize withdrawal
   const {
     data: finalizeHash,
     isPending: isFinalizeLoading,
@@ -39,94 +20,48 @@ export const useFinalizeWithdrawal = (
     error: requestError,
   } = useWriteContract();
 
-  const handleFinalizeWithdraw = useCallback(async () => {
-    if (isFinalizeLoading) return;
-    setIsFinalizeWithdrawalLoading(true);
+  // handles batch or single claim; expects: string[] for ids, string[] for amounts in wei
+  const handleClaim = useCallback(
+    async (requestIds: string[], amounts: string[]) => {
+      if (requestIds.length === 0 || amounts.length === 0 || isFinalizeLoading)
+        return;
 
-    try {
+      setClaimedRequestIds(new Set(requestIds));
       reset();
-
-      // check allowance first
-      await approve(amount);
-    } catch {
-      setIsFinalizeWithdrawalLoading(false);
-    }
-  }, [amount, approve, isFinalizeLoading, reset]);
-
-  useEffect(() => {
-    if (
-      isFinalizeWithdrawalLoading &&
-      isApprovalSuccessOrNotNeeded &&
-      !isFinalizeStarted
-    ) {
-      setIsFinalizeStarted(true);
 
       writeContract({
         address: TREASURY_ADDRESSES[DEFAULT_CHAIN_ID],
         abi: TREASURY_ABI,
         functionName: "finalizeWithdrawRequests",
-        args: [[requestId], [amount]],
+        args: [requestIds.map(BigInt), amounts.map(BigInt)],
       });
-    }
-  }, [
-    amount,
-    isApprovalSuccessOrNotNeeded,
-    isFinalizeStarted,
-    isFinalizeWithdrawalLoading,
-    requestId,
-    writeContract,
-  ]);
+    },
+    [isFinalizeLoading, reset, writeContract],
+  );
 
-  // Reset states once request finished
-  useEffect(() => {
-    if (
-      isFinalizeWithdrawalLoading &&
-      isFinalizeStarted &&
-      !isFinalizeLoading
-    ) {
-      setIsFinalizeWithdrawalLoading(false);
-      setIsFinalizeStarted(false);
-
-      if (finalizeHash) {
-        onFinish();
-      }
-    }
-  }, [
-    isFinalizeLoading,
-    isFinalizeStarted,
-    isFinalizeWithdrawalLoading,
-    finalizeHash,
-    onFinish,
-  ]);
-
-  const baseError = approveError || requestError;
-
-  const status: FInalizeWithdrawalStatus = baseError
+  const status: FInalizeWithdrawalStatus = requestError
     ? "error"
-    : isFinalizeWithdrawalLoading && isLoading && !approveHash
-      ? "approving"
-      : isFinalizeWithdrawalLoading &&
-          approveHash &&
-          !isApprovalSuccessOrNotNeeded
-        ? "approved"
-        : isFinalizeWithdrawalLoading && isFinalizeLoading && !finalizeHash
-          ? "finalizing"
-          : finalizeHash
-            ? "finalized"
-            : "idle";
+    : isFinalizeLoading && !finalizeHash
+      ? "finalizing"
+      : finalizeHash
+        ? "finalized"
+        : "idle";
 
-  const isBusy =
-    status === "approving" ||
-    status === "approved" ||
-    status === "finalizing" ||
-    status === "finalized";
+  useEffect(() => {
+    if ((finalizeHash || requestError) && claimedRequestIds.size !== 0) {
+      setClaimedRequestIds(new Set());
+    }
+  }, [finalizeHash, requestError, claimedRequestIds]);
+
+  const isBusy = status === "finalizing";
 
   return {
-    handleFinalizeWithdraw,
+    handleClaim,
     status,
     isBusy,
-    approveHash,
     finalizeHash,
-    error: baseError,
+    error: requestError,
+    claimedRequestIds,
+    reset,
   };
 };
