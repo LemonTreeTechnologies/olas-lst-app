@@ -16,7 +16,7 @@ export const TOKEN_LOGOS: Record<TokenType, string> = {
 };
 
 const DISCLOSURES_URL =
-  "https://raw.githubusercontent.com/kupermind/olas-lst/main/doc/disclosures";
+  "https://raw.githubusercontent.com/LemonTreeTechnologies/olas-lst/main/doc/disclosures";
 
 export const DISCLOSURES_URLS = {
   privacyPolicy: `${DISCLOSURES_URL}/stolas_privacy_policy.md`,
