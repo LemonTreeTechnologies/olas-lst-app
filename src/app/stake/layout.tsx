@@ -1,9 +1,3 @@
-import { MainLayout } from "@/components/layouts/MainLayout";
+import { MainLayout as RootLayout } from "@/components/layouts/MainLayout";
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return <MainLayout>{children}</MainLayout>;
-}
+export default RootLayout;
