@@ -169,7 +169,9 @@ export const Claim = () => {
                   showCheckbox={
                     hasClaimableRequests && claimableRequests.length > 1
                   }
-                  isClaiming={busyRequests.current.has(request.id)}
+                  isClaiming={
+                    error ? false : busyRequests.current.has(request.id)
+                  }
                   chainId={chainId ?? 0}
                 />
               ))}
