@@ -14,7 +14,6 @@ export const ClaimableRequest = ({
   onSelect,
   showCheckbox,
   isClaiming,
-  claimedRequestIds,
   chainId,
 }: {
   request: WithdrawRequest;
@@ -22,12 +21,9 @@ export const ClaimableRequest = ({
   onSelect: (requestId: string, selected: boolean) => void;
   showCheckbox: boolean;
   isClaiming: boolean;
-  claimedRequestIds: Set<string>;
   chainId: number;
 }) => {
   const isDisabled = request.isComplete || !request.isAvailable;
-  const isBeingClaimed = claimedRequestIds.has(request.id);
-  const showLoader = isClaiming && isBeingClaimed;
 
   return (
     <div className="flex items-center justify-between py-4 border-b border-[#FFFFFF1A] last:border-b-0">
@@ -36,7 +32,7 @@ export const ClaimableRequest = ({
           <input
             type="checkbox"
             checked={isSelected}
-            disabled={isDisabled || showLoader}
+            disabled={isDisabled || isClaiming}
             onChange={(e) => onSelect(request.id, e.target.checked)}
             className="w-4 h-4 text-[#364DED] bg-transparent border border-[#FFFFFF1A] rounded focus:ring-[#364DED] focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
           />
@@ -52,7 +48,7 @@ export const ClaimableRequest = ({
         </div>
       </div>
       <div className="flex gap-4 items-center">
-        {showLoader ? (
+        {isClaiming ? (
           <div className="flex items-center gap-2">
             <Spinner />
             <span className="text-sm text-white/60">Claiming...</span>

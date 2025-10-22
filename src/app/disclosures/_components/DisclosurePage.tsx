@@ -6,7 +6,6 @@ type MarkdownPageProps = {
 };
 
 export const MarkdownPage = async ({ url }: MarkdownPageProps) => {
-  console.log("url", url);
   const res = await fetch(url, { next: { revalidate: 3600 } }); // caching for 1 hour
 
   if (!res.ok) {

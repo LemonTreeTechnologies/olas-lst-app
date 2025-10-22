@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useWriteContract } from "wagmi";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import {
@@ -8,10 +8,6 @@ import {
 import { FInalizeWithdrawalStatus } from "./types";
 
 export const useFinalizeWithdrawal = () => {
-  const [claimedRequestIds, setClaimedRequestIds] = useState<Set<string>>(
-    new Set(),
-  );
-
   const {
     data: finalizeHash,
     isPending: isFinalizeLoading,
@@ -22,11 +18,10 @@ export const useFinalizeWithdrawal = () => {
 
   // handles batch or single claim; expects: string[] for ids, string[] for amounts in wei
   const handleClaim = useCallback(
-    async (requestIds: string[], amounts: string[]) => {
+    async (requestIds: string[], amounts: string[], onFinish: () => void) => {
       if (requestIds.length === 0 || amounts.length === 0 || isFinalizeLoading)
         return;
 
-      setClaimedRequestIds(new Set(requestIds));
       reset();
 
       writeContract({
@@ -35,6 +30,8 @@ export const useFinalizeWithdrawal = () => {
         functionName: "finalizeWithdrawRequests",
         args: [requestIds.map(BigInt), amounts.map(BigInt)],
       });
+
+      onFinish();
     },
     [isFinalizeLoading, reset, writeContract],
   );
@@ -47,12 +44,6 @@ export const useFinalizeWithdrawal = () => {
         ? "finalized"
         : "idle";
 
-  useEffect(() => {
-    if ((finalizeHash || requestError) && claimedRequestIds.size !== 0) {
-      setClaimedRequestIds(new Set());
-    }
-  }, [finalizeHash, requestError, claimedRequestIds]);
-
   const isBusy = status === "finalizing";
 
   return {
@@ -61,7 +52,6 @@ export const useFinalizeWithdrawal = () => {
     isBusy,
     finalizeHash,
     error: requestError,
-    claimedRequestIds,
     reset,
   };
 };

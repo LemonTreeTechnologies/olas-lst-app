@@ -17,23 +17,22 @@ import { SCOPE_KEYS } from "@/constants/scopeKeys";
 import { ClaimableRequest } from "./ClaimableRequest";
 
 type SelectionHeaderProps = {
-  availableRequests: WithdrawRequest[];
+  claimableRequests: WithdrawRequest[];
   selectedRequests: Set<string>;
   onSelectAll: () => void;
 };
 
 const SelectionHeader = ({
-  availableRequests,
+  claimableRequests,
   selectedRequests,
   onSelectAll,
 }: SelectionHeaderProps) => {
-  const claimableRequests = availableRequests.filter(
-    (request) => request.isAvailable && !request.isComplete,
-  );
+  if (claimableRequests.length <= 1) return null;
+
   const isAllSelected =
     selectedRequests.size === claimableRequests.length &&
     claimableRequests.length > 0;
-  if (claimableRequests.length === 0) return null;
+
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-4">
@@ -57,18 +56,13 @@ export const Claim = () => {
   );
   const busyRequests = useRef<Set<string>>(new Set());
   const { address, isConnected: isAccountConnected, chainId } = useAccount();
-  const { data: stakerData, isLoading: isStakerLoading } = useStaker(
-    { id: address },
-    !!address,
-  );
   const {
-    handleClaim,
-    status,
-    isBusy,
-    finalizeHash,
-    error,
-    claimedRequestIds,
-  } = useFinalizeWithdrawal();
+    data: stakerData,
+    isLoading: isStakerLoading,
+    isRefetching: isStakerRefetching,
+  } = useStaker({ id: address }, !!address);
+  const { handleClaim, status, isBusy, finalizeHash, error } =
+    useFinalizeWithdrawal();
 
   const requests = useMemo<WithdrawRequest[]>(() => {
     const withdrawRequests = stakerData?.staker?.withdrawRequests;
@@ -96,12 +90,6 @@ export const Claim = () => {
     });
   }, [stakerData]);
 
-  useEffect(() => {
-    if (isStakerLoading) {
-      busyRequests.current = new Set([]);
-    }
-  }, [isStakerLoading]);
-
   const availableRequests = requests.filter((request) => request.isAvailable);
   const claimableRequests = availableRequests.filter(
     (request) => !request.isComplete,
@@ -109,8 +97,12 @@ export const Claim = () => {
   const hasClaimableRequests = claimableRequests.length > 0;
   const selectedRequestsData = useMemo(
     () =>
-      availableRequests.filter((request) => selectedRequests.has(request.id)),
-    [availableRequests, selectedRequests],
+      claimableRequests.length === 1
+        ? claimableRequests
+        : claimableRequests.filter((request) =>
+            selectedRequests.has(request.id),
+          ),
+    [claimableRequests, selectedRequests],
   );
 
   const handleSelect = (requestId: string, selected: boolean) => {
@@ -137,10 +129,15 @@ export const Claim = () => {
       (request) => request.olasAmountInWei,
     );
     busyRequests.current = new Set(requestIds);
-    handleClaim(requestIds, amounts);
+    handleClaim(requestIds, amounts, () => setSelectedRequests(new Set()));
   };
 
   useRefetchAfterUpdate(finalizeHash, [SCOPE_KEYS.staker({ id: address })]);
+  useEffect(() => {
+    if (isStakerRefetching) {
+      busyRequests.current = new Set([]);
+    }
+  }, [isStakerRefetching]);
 
   return (
     <Card title="Claim withdrawal">
@@ -158,7 +155,7 @@ export const Claim = () => {
         <>
           <div className="mb-6">
             <SelectionHeader
-              availableRequests={availableRequests}
+              claimableRequests={claimableRequests}
               selectedRequests={selectedRequests}
               onSelectAll={handleSelectAll}
             />
@@ -169,9 +166,10 @@ export const Claim = () => {
                   request={request}
                   isSelected={selectedRequests.has(request.id)}
                   onSelect={handleSelect}
-                  showCheckbox={hasClaimableRequests}
+                  showCheckbox={
+                    hasClaimableRequests && claimableRequests.length > 1
+                  }
                   isClaiming={busyRequests.current.has(request.id)}
-                  claimedRequestIds={claimedRequestIds}
                   chainId={chainId ?? 0}
                 />
               ))}
@@ -191,15 +189,17 @@ export const Claim = () => {
             <div className="flex flex-auto">
               <Button
                 className="w-full"
-                disabled={selectedRequests.size === 0 || !hasClaimableRequests}
+                disabled={
+                  selectedRequestsData.length === 0 || !hasClaimableRequests
+                }
                 onClick={handleBatchClaim}
                 isLoading={isBusy}
               >
                 {!hasClaimableRequests
                   ? "No claimable requests"
-                  : selectedRequests.size === 0
+                  : selectedRequestsData.length === 0
                     ? "Select requests to claim"
-                    : `Claim ${selectedRequests.size} ${pluralize("request", selectedRequests.size)}`}
+                    : `Claim${selectedRequests.size > 0 ? ` ${selectedRequests.size} ${pluralize("request", selectedRequests.size)}` : ""}`}
               </Button>
             </div>
           )}
