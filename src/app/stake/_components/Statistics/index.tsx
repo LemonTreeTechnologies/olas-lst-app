@@ -5,12 +5,12 @@ import { Card } from "@/components/Card";
 import { KeyValueList } from "@/components/KeyValueList";
 import { Spinner } from "@/components/loaders/Spinner";
 import { formatNumber } from "@/utils/format";
-import { useCurrentApr } from "@/hooks/useApr";
 import { useFetchGlobal } from "@/hooks/useGlobal";
 import { useStOlasStatistics } from "./hooks";
 import { ExternalLink } from "@/components/ExternalLink";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import { ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
+import { Apr } from "@/components/Apr";
 
 const getStatisticValueContent = ({
   rawValue,
@@ -19,7 +19,7 @@ const getStatisticValueContent = ({
 }: {
   rawValue: string | bigint | number | undefined;
   isLoading: boolean;
-  content: string;
+  content: string | React.ReactElement;
 }) => {
   if (isLoading) return <Spinner />;
   if (rawValue === undefined) return "--";
@@ -27,9 +27,6 @@ const getStatisticValueContent = ({
 };
 
 export const Statistics = () => {
-  /** APR */
-  const { apr, isLoading: isAprLoading } = useCurrentApr();
-
   /** st OLAS statistics */
   const {
     stakedBalance,
@@ -40,7 +37,7 @@ export const Statistics = () => {
     isLoading: isStOlasStatisticsLoading,
   } = useStOlasStatistics();
 
-  /** Total number of stakers */
+  /** APR and Total number of stakers */
   const { data: globalData, isLoading: isGlobalLoading } = useFetchGlobal();
 
   return (
@@ -56,11 +53,11 @@ export const Statistics = () => {
       <KeyValueList
         items={[
           {
-            label: "Avg APY",
+            label: "APR",
             value: getStatisticValueContent({
-              rawValue: apr,
-              isLoading: isAprLoading,
-              content: `${apr}%`,
+              rawValue: globalData?.global?.sevenDaysApr,
+              isLoading: isGlobalLoading,
+              content: <Apr value={globalData?.global?.sevenDaysApr} />,
             }),
           },
           {

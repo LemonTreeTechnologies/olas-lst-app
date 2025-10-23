@@ -54,4 +54,6 @@ export type Staker = {
 
 export type Global = {
   totalStakers: number;
+  sevenDaysApr: string;
+  sevenDaysMovingApr: string;
 };
