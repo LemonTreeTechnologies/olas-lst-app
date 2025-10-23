@@ -3,13 +3,15 @@
 import Head from "next/head";
 import { LaunchLayout } from "@/components/layouts/LaunchLayout";
 import { useStTotalAssets } from "@/hooks/useStTotalAssets";
-import { useCurrentApr } from "@/hooks/useApr";
 import { StatisticSkeleton } from "@/components/loaders/Skeleton";
+import { useFetchGlobal } from "@/hooks/useGlobal";
+import { Apr } from "@/components/Apr";
 
 export default function Home() {
   const { formattedStTotalAssets, isLoading: isStTotalAssetsLoading } =
     useStTotalAssets();
-  const { apr, isLoading: isAprLoading } = useCurrentApr();
+  const { data: globalData, isLoading: isGlobalLoading } = useFetchGlobal();
+
   return (
     <>
       <Head>
@@ -44,7 +46,14 @@ export default function Home() {
 
             <div className="flex flex-col gap-1 text-center">
               <span className="font-gradient text-4xl font-semibold">
-                {isAprLoading ? <StatisticSkeleton /> : `${apr}%`}
+                {isGlobalLoading ? (
+                  <StatisticSkeleton />
+                ) : (
+                  <Apr
+                    value={globalData?.global?.sevenDaysMovingApr}
+                    className="font-gradient"
+                  />
+                )}
               </span>
               <span className="font-tertiary">APR</span>
             </div>

@@ -70,6 +70,8 @@ const globalQuery = `
   query GetGlobal {
     global(id:"") {
       totalStakers
+      sevenDaysApr
+      sevenDaysMovingApr
     }
   }
 `;
