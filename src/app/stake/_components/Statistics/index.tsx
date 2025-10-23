@@ -57,7 +57,7 @@ export const Statistics = () => {
             value: getStatisticValueContent({
               rawValue: globalData?.global?.sevenDaysApr,
               isLoading: isGlobalLoading,
-              content: <Apr value={globalData?.global?.sevenDaysApr}/>,
+              content: <Apr value={globalData?.global?.sevenDaysApr} />,
             }),
           },
           {
