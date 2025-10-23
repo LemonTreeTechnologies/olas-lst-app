@@ -50,7 +50,7 @@ export default function Home() {
                   <StatisticSkeleton />
                 ) : (
                   <Apr
-                    value={globalData?.global?.sevenDaysMovingApr}
+                    value={globalData?.global?.sevenDaysApr}
                     className="font-gradient"
                   />
                 )}
