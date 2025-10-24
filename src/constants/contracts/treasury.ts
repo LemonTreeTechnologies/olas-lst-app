@@ -1,8 +1,9 @@
 import { Address } from "viem";
-import { sepolia } from "viem/chains";
+import { mainnet, sepolia } from "viem/chains";
 
 export const TREASURY_ADDRESSES: Record<number, Address> = {
   [sepolia.id]: "0x9fFD6F14bCe91CE1e2fa7c3412897d758108A98e",
+  [mainnet.id]: "0xcfA10d192c3999b5CA59aD3c7512c40f1B919e01",
 };
 
 export const TREASURY_ABI = [
