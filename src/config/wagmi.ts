@@ -10,7 +10,7 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-export const networks = [sepolia, mainnet, gnosis, base] as [
+export const networks = [mainnet, sepolia, gnosis, base] as [
   AppKitNetwork,
   ...AppKitNetwork[],
 ];

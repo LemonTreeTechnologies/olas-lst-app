@@ -12,6 +12,7 @@ export const SECONDS_IN_YEAR = 365 * 24 * 60 * 60;
 
 export const SCAN_URLS: Record<number, string> = {
   [sepolia.id]: "https://sepolia.etherscan.io/",
+  [mainnet.id]: "https://etherscan.io/",
 } as const;
 
 export const TOKEN_LOGOS: Record<TokenType, string> = {

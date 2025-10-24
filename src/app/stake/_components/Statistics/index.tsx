@@ -98,7 +98,7 @@ export const Statistics = () => {
             value: getStatisticValueContent({
               rawValue: totalSupply,
               isLoading: isStOlasStatisticsLoading,
-              content: `${formatNumber(Number(formatUnits(totalSupply ?? BigInt(0), 18)))} OLAS`,
+              content: `${formatNumber(Number(formatUnits(totalSupply ?? BigInt(0), 18)))} stOLAS`,
             }),
           },
           {
