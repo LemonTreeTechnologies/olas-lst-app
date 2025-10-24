@@ -16,11 +16,6 @@ const MENU_ITEMS = [
     href: "/withdraw",
     label: "Withdraw",
   },
-  {
-    key: "rewards",
-    href: "/rewards",
-    label: "My rewards",
-  },
 ];
 
 export const Header = () => {
