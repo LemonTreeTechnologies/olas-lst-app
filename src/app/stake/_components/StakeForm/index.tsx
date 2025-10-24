@@ -147,7 +147,6 @@ export const StakeForm = () => {
               content: `1 OLAS = ${formatNumber(Number(rawDeposit) / Number(amountInWei), { maximumFractionDigits: 3 })} stOLAS`,
             }),
           },
-          { label: "Max transaction cost", value: "--" },
           { label: "Reward fee", value: "0%" },
         ]}
       />
