@@ -7,7 +7,8 @@ import {
   Staker,
   Global,
 } from "./types";
-import { OLAS_LST_SUBGRAPH_URL } from "@/constants";
+import { OLAS_LST_SUBGRAPH_URLS } from "@/constants";
+import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 
 const getStakingModelsQuery = (params: GetStakingModelsQueryParams) => gql`
   query GetStakingModels(
@@ -78,17 +79,20 @@ const globalQuery = `
 
 export const getStakingModels = async (params: GetStakingModelsQueryParams) =>
   request<{ stakingModels: StakingModel[] }>(
-    OLAS_LST_SUBGRAPH_URL,
+    OLAS_LST_SUBGRAPH_URLS[DEFAULT_CHAIN_ID],
     getStakingModelsQuery(params),
     params,
   );
 
 export const getStaker = async (params: GetStakerParams) =>
   request<{ staker: Staker | null }>(
-    OLAS_LST_SUBGRAPH_URL,
+    OLAS_LST_SUBGRAPH_URLS[DEFAULT_CHAIN_ID],
     stakerQuery,
     params,
   );
 
 export const getGlobal = async () =>
-  request<{ global: Global | null }>(OLAS_LST_SUBGRAPH_URL, globalQuery);
+  request<{ global: Global | null }>(
+    OLAS_LST_SUBGRAPH_URLS[DEFAULT_CHAIN_ID],
+    globalQuery,
+  );

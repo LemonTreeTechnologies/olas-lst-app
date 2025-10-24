@@ -1,8 +1,9 @@
 import { Address } from "viem";
-import { sepolia } from "viem/chains";
+import { mainnet, sepolia } from "viem/chains";
 
 export const OLAS_ADDRESSES: Record<number, Address> = {
   [sepolia.id]: "0xeb2725bD76f6b1569Cf1484fCa0f2D55714A085d",
+  [mainnet.id]: "0x0001A500A6B18995B03f44bb040A5fFc28E45CB0",
 };
 
 export const OLAS_ABI = [
