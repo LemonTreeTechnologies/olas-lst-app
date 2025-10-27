@@ -85,7 +85,7 @@ export const Statistics = () => {
             }),
           },
           {
-            label: "stOLAS TVL",
+            label: "OLAS TVL",
             value: getStatisticValueContent({
               rawValue: totalAssets,
               isLoading: isStOlasStatisticsLoading,

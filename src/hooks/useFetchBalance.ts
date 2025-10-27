@@ -67,19 +67,10 @@ export const useOlasBalances = (
     scopeKey: SCOPE_KEYS.stOlas(address, chainId),
   });
 
-  const availableOlasBalance =
-    olasBalance !== undefined && stOlasBalance !== undefined
-      ? olasBalance - stOlasBalance
-      : undefined;
   const availableOlasFormattedBalance =
-    availableOlasBalance !== undefined
+    olasBalance !== undefined
       ? formatNumber(
-          Number(
-            formatUnits(
-              availableOlasBalance < 0 ? BigInt(0) : availableOlasBalance,
-              18,
-            ),
-          ),
+          Number(formatUnits(olasBalance < 0 ? BigInt(0) : olasBalance, 18)),
         )
       : "0";
 
@@ -88,7 +79,7 @@ export const useOlasBalances = (
     olasBalance,
     stOlasFormattedBalance,
     stOlasBalance,
-    availableOlasBalance,
+    availableOlasBalance: olasBalance,
     availableOlasFormattedBalance,
     isLoading: isOlasBalanceLoading || isStOlasBalanceLoading,
   };
