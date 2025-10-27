@@ -10,7 +10,7 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-const mainNetwork = process.env.DEPLOYMENT === "production" ? mainnet : sepolia;
+const mainNetwork = process.env.DEPLOYMENT === "testnet" ? sepolia : mainnet;
 
 export const networks = [mainNetwork, gnosis, base] as [
   AppKitNetwork,
