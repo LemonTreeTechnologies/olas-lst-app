@@ -1,0 +1,8 @@
+services:
+  webapp: 
+    build:
+      context: .
+      args:
+        - NEXT_PUBLIC_PROJECT_ID=${NEXT_PUBLIC_PROJECT_ID}
+    ports:
+      - "3000:3000"
