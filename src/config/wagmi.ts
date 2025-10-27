@@ -10,7 +10,9 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-export const networks = [mainnet, gnosis, base, sepolia] as [
+const mainNetwork = process.env.DEPLOYMENT === "production" ? mainnet : sepolia;
+
+export const networks = [mainNetwork, gnosis, base] as [
   AppKitNetwork,
   ...AppKitNetwork[],
 ];
@@ -27,4 +29,4 @@ export const wagmiAdapter = new WagmiAdapter({
 
 export const config = wagmiAdapter.wagmiConfig;
 
-export const DEFAULT_CHAIN_ID = mainnet.id;
+export const DEFAULT_CHAIN_ID = mainNetwork.id;
