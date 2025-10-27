@@ -49,5 +49,6 @@ export const useDepositoryLimits = () => {
         return { productName, limit };
       }
     },
+    gcTime: 5 * 60 * 1000,
   });
 };

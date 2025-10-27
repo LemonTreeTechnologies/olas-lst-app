@@ -29,8 +29,7 @@ export default function Home() {
             Liquid staking with stOLAS
           </h1>
           <p className="font-tertiary text-lg text-center">
-            Scalable rewards and enhanced strategies powered by a modular
-            framework.
+            Scalable rewards powered by a modular framework
           </p>
           <div className="flex gap-12">
             <div className="flex flex-col gap-1 text-center">

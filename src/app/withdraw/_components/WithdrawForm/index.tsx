@@ -84,10 +84,6 @@ export const WithdrawForm = () => {
             }),
           },
           {
-            label: "Max unlock cost",
-            value: "FREE",
-          },
-          {
             label: "Exchange rate",
             value: getWithdrawValueContent({
               amount,
