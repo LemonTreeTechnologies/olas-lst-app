@@ -1,0 +1,27 @@
+github:
+  release: false
+  autoGenerate: true
+
+git:
+  commit: true
+  tag: true
+  push: true
+  tagName: "v${version}"
+
+npm:
+  publish: false
+
+plugins:
+  "@release-it/bumper":
+    out:
+      - file: ".github/workflows/publish.yaml"
+        type: text/yaml
+        path: 
+        - jobs.build-docker.env.RELEASE_VERSION
+
+      - file: "charts/lstolas/Chart.yaml"
+        type: text/yaml
+        path: appVersion
+
+hooks:
+  after:bump: "sed -i \"s/'/\\\"/g\" charts/lstolas/Chart.yaml"
