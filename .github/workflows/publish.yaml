@@ -7,7 +7,7 @@ jobs:
   build-docker:
     env:
       DOCKER_BUILDKIT: 1
-      RELEASE_VERSION: 0.1.1
+      RELEASE_VERSION: 0.1.2
       IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO_NAME }}
     strategy:
       fail-fast: false
