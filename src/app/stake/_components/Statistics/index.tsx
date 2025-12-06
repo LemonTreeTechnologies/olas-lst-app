@@ -11,6 +11,7 @@ import { ExternalLink } from "@/components/ExternalLink";
 import { DEFAULT_CHAIN_ID } from "@/config/wagmi";
 import { ST_OLAS_ADDRESSES } from "@/constants/contracts/stOlas";
 import { Apr } from "@/components/Apr";
+import { SCAN_URLS } from "@/constants";
 
 const getStatisticValueContent = ({
   rawValue,
@@ -45,7 +46,7 @@ export const Statistics = () => {
       title="Global statistics"
       hint={
         <ExternalLink
-          href={ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID]}
+          href={`${SCAN_URLS[DEFAULT_CHAIN_ID]}address/${ST_OLAS_ADDRESSES[DEFAULT_CHAIN_ID]}`}
           text="Explore on Etherscan"
         />
       }
