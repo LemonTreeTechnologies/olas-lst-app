@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { Figtree } from "next/font/google";
 import "./globals.css";
 import ReownAppKitProvider from "@/context/ReownAppKitProvider";
@@ -22,13 +21,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersData = await headers();
-  const cookies = headersData.get("cookie");
-
   return (
     <html lang="en">
       <body className={`${figtree.variable} antialiased`}>
-        <ReownAppKitProvider cookies={cookies}>{children}</ReownAppKitProvider>
+        <ReownAppKitProvider>{children}</ReownAppKitProvider>
       </body>
     </html>
   );

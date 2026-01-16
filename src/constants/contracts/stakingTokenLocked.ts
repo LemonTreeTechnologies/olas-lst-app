@@ -1,571 +1,967 @@
 export const STAKING_TOKEN_LOCKED_ABI = [
-  { inputs: [], name: "AlreadyInitialized", type: "error" },
   {
-    inputs: [
-      { internalType: "address", name: "activityChecker", type: "address" },
-    ],
-    name: "ContractOnly",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "provided", type: "uint256" },
-      { internalType: "uint256", name: "expected", type: "uint256" },
-    ],
-    name: "LowerThan",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "maxNumServices", type: "uint256" },
-    ],
-    name: "MaxNumServicesReached",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "sender", type: "address" },
-      { internalType: "address", name: "owner", type: "address" },
-    ],
-    name: "OwnerOnly",
-    type: "error",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "ServiceNotFound",
-    type: "error",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "ServiceNotUnstaked",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "token", type: "address" },
-      { internalType: "address", name: "from", type: "address" },
-      { internalType: "address", name: "to", type: "address" },
-      { internalType: "uint256", name: "value", type: "uint256" },
-    ],
-    name: "TokenTransferFailed",
-    type: "error",
-  },
-  {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "UnauthorizedAccount",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "state", type: "uint256" },
-      { internalType: "uint256", name: "serviceId", type: "uint256" },
-    ],
-    name: "WrongServiceState",
-    type: "error",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "expected", type: "address" },
-      { internalType: "address", name: "provided", type: "address" },
-    ],
-    name: "WrongStakingToken",
-    type: "error",
-  },
-  { inputs: [], name: "ZeroAddress", type: "error" },
-  { inputs: [], name: "ZeroValue", type: "error" },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "epoch",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "availableRewards",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "serviceIds",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "rewards",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "epochLength",
-        type: "uint256",
-      },
-    ],
-    name: "Checkpoint",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "balance",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "availableRewards",
-        type: "uint256",
-      },
-    ],
-    name: "Deposit",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "epoch",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "serviceId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "multisig",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "nonces",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "reward",
-        type: "uint256",
-      },
-    ],
-    name: "RewardClaimed",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "epoch",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "serviceId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "multisig",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "nonces",
-        type: "uint256[]",
-      },
-    ],
-    name: "ServiceStaked",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "epoch",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "serviceId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "multisig",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "nonces",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "reward",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "availableRewards",
-        type: "uint256",
-      },
-    ],
-    name: "ServiceUnstaked",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: "address", name: "to", type: "address" },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "Withdraw",
-    type: "event",
-  },
-  {
-    inputs: [],
+    type: "function",
     name: "VERSION",
-    outputs: [{ internalType: "string", name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "activityChecker",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "availableRewards",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "balance",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "calculateStakingLastReward",
-    outputs: [{ internalType: "uint256", name: "reward", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "calculateStakingReward",
-    outputs: [{ internalType: "uint256", name: "reward", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "checkpoint",
     outputs: [
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "activityChecker",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "availableRewards",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "balance",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "calculateStakingLastReward",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "reward",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "calculateStakingReward",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "reward",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "checkpoint",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
     ],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
+    type: "function",
     name: "claim",
-    outputs: [{ internalType: "uint256", name: "reward", type: "uint256" }],
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "reward",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+    type: "function",
     name: "deposit",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "emissionsAmount",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "epochCounter",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getNextRewardCheckpointTimestamp",
-    outputs: [{ internalType: "uint256", name: "tsNext", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getServiceIds",
-    outputs: [{ internalType: "uint256[]", name: "", type: "uint256[]" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "getServiceInfo",
     outputs: [
       {
-        components: [
-          { internalType: "address", name: "multisig", type: "address" },
-          { internalType: "address", name: "owner", type: "address" },
-          { internalType: "uint256[]", name: "nonces", type: "uint256[]" },
-          { internalType: "uint256", name: "tsStart", type: "uint256" },
-          { internalType: "uint256", name: "reward", type: "uint256" },
-        ],
-        internalType: "struct ServiceInfo",
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "epochCounter",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getNextRewardCheckpointTimestamp",
+    inputs: [],
+    outputs: [
+      {
+        name: "tsNext",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getNumServiceIds",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getServiceIds",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getServiceInfo",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
         name: "sInfo",
         type: "tuple",
+        internalType: "struct ServiceInfo",
+        components: [
+          {
+            name: "multisig",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "owner",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "nonces",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
+            name: "tsStart",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "reward",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
+    type: "function",
     name: "getStakingState",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     outputs: [
       {
-        internalType: "enum StakingTokenLocked.StakingState",
         name: "stakingState",
         type: "uint8",
+        internalType: "enum StakingTokenLocked.StakingState",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "initialize",
     inputs: [
       {
-        components: [
-          { internalType: "uint256", name: "maxNumServices", type: "uint256" },
-          {
-            internalType: "uint256",
-            name: "rewardsPerSecond",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "minStakingDeposit",
-            type: "uint256",
-          },
-          { internalType: "uint256", name: "livenessPeriod", type: "uint256" },
-          {
-            internalType: "uint256",
-            name: "timeForEmissions",
-            type: "uint256",
-          },
-          { internalType: "address", name: "serviceRegistry", type: "address" },
-          {
-            internalType: "address",
-            name: "serviceRegistryTokenUtility",
-            type: "address",
-          },
-          { internalType: "address", name: "stakingToken", type: "address" },
-          { internalType: "address", name: "stakingManager", type: "address" },
-          { internalType: "address", name: "activityChecker", type: "address" },
-        ],
-        internalType: "struct StakingTokenLocked.StakingParams",
         name: "_stakingParams",
         type: "tuple",
+        internalType: "struct StakingTokenLocked.StakingParams",
+        components: [
+          {
+            name: "maxNumServices",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "rewardsPerSecond",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "minStakingDeposit",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "livenessPeriod",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "timeForEmissions",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "serviceRegistry",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "serviceRegistryTokenUtility",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "stakingToken",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "stakingManager",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "activityChecker",
+            type: "address",
+            internalType: "address",
+          },
+        ],
       },
     ],
-    name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "livenessPeriod",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    name: "mapServiceInfo",
+    inputs: [],
     outputs: [
-      { internalType: "address", name: "multisig", type: "address" },
-      { internalType: "address", name: "owner", type: "address" },
-      { internalType: "uint256", name: "tsStart", type: "uint256" },
-      { internalType: "uint256", name: "reward", type: "uint256" },
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
-    name: "maxNumServices",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
     type: "function",
-  },
-  {
-    inputs: [],
-    name: "minStakingDeposit",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
+    name: "mapServiceInfo",
     inputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "bytes", name: "", type: "bytes" },
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
+    outputs: [
+      {
+        name: "multisig",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "owner",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "tsStart",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "reward",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "maxNumServices",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "minStakingDeposit",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "onERC721Received",
-    outputs: [{ internalType: "bytes4", name: "", type: "bytes4" }],
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes4",
+        internalType: "bytes4",
+      },
+    ],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "rewardsPerSecond",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "serviceRegistry",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "serviceRegistryTokenUtility",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    type: "function",
     name: "setServiceIds",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
+    type: "function",
     name: "stake",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "stakingManager",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "stakingToken",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "timeForEmissions",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "tsCheckpoint",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "serviceId", type: "uint256" }],
-    name: "unstake",
-    outputs: [{ internalType: "uint256", name: "reward", type: "uint256" }],
-    stateMutability: "nonpayable",
     type: "function",
+    name: "tsCheckpoint",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "unstake",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "reward",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    name: "Checkpoint",
+    inputs: [
+      {
+        name: "epoch",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "availableRewards",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "serviceIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "rewards",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "epochLength",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Deposit",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "balance",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "availableRewards",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RewardClaimed",
+    inputs: [
+      {
+        name: "epoch",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "serviceId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "multisig",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "nonces",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "reward",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ServiceStaked",
+    inputs: [
+      {
+        name: "epoch",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "serviceId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "multisig",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "nonces",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ServiceUnstaked",
+    inputs: [
+      {
+        name: "epoch",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "serviceId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "multisig",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "nonces",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "reward",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "availableRewards",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Withdraw",
+    inputs: [
+      {
+        name: "to",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "error",
+    name: "AlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ContractOnly",
+    inputs: [
+      {
+        name: "activityChecker",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "LowerThan",
+    inputs: [
+      {
+        name: "provided",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "expected",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "MaxNumServicesReached",
+    inputs: [
+      {
+        name: "maxNumServices",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "OwnerOnly",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "owner",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ServiceNotFound",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ServiceNotUnstaked",
+    inputs: [
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TokenTransferFailed",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "from",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "to",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "value",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "UnauthorizedAccount",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "WrongServiceState",
+    inputs: [
+      {
+        name: "state",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "serviceId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "WrongStakingToken",
+    inputs: [
+      {
+        name: "expected",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "provided",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ZeroAddress",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ZeroValue",
+    inputs: [],
   },
 ] as const;
