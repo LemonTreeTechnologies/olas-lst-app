@@ -4,7 +4,7 @@ import { wagmiAdapter, projectId, networks } from "@/config/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
 import React, { type ReactNode } from "react";
-import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
+import { WagmiProvider, type Config } from "wagmi";
 
 // Set up queryClient
 export const queryClient = new QueryClient();
@@ -24,32 +24,15 @@ export const modal = createAppKit({
   networks,
   metadata,
   themeMode: "dark",
-  features: {
-    analytics: true, // Optional - defaults to your Cloud configuration
-  },
   themeVariables: {
     "--w3m-accent": "#364DED",
     "--w3m-border-radius-master": "1px",
   },
 });
 
-const ReownAppKitProvider = ({
-  children,
-  cookies,
-}: {
-  children: ReactNode;
-  cookies: string | null;
-}) => {
-  const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
-    cookies,
-  );
-
+const ReownAppKitProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <WagmiProvider
-      config={wagmiAdapter.wagmiConfig as Config}
-      initialState={initialState}
-    >
+    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

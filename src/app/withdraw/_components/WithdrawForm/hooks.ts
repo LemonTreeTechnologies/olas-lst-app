@@ -47,10 +47,11 @@ export const useRequestWithdrawal = (
         functionName: "requestToWithdraw",
         args: [
           BigInt(amount),
-          chainIds,
+          [[], chainIds],
+          [],
           stakingProxies,
-          bridgePayloads,
-          values,
+          [[], bridgePayloads],
+          [values],
         ],
         value: BigInt(0),
       });

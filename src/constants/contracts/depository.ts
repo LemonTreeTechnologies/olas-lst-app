@@ -8,1077 +8,1305 @@ export const DEPOSITORY_ADDRESSES: Record<number, Address> = {
 
 export const DEPOSITORY_ABI = [
   {
+    type: "constructor",
     inputs: [
       {
-        internalType: "address",
         name: "_olas",
         type: "address",
+        internalType: "address",
       },
       {
-        internalType: "address",
         name: "_st",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "nonpayable",
-    type: "constructor",
   },
   {
-    inputs: [],
-    name: "AlreadyInitialized",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "provided",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "max",
-        type: "uint256",
-      },
-    ],
-    name: "Overflow",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "OwnerOnly",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "Paused",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint8",
-        name: "productType",
-        type: "uint8",
-      },
-      {
-        internalType: "uint256",
-        name: "depositAmount",
-        type: "uint256",
-      },
-    ],
-    name: "ProductTypeDepositOverflow",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ReentrancyGuard",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "stakingModelId",
-        type: "uint256",
-      },
-    ],
-    name: "StakingModelAlreadyExists",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "UnauthorizedAccount",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "WrongArrayLength",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "stakingModelId",
-        type: "uint256",
-      },
-    ],
-    name: "WrongStakingModel",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ZeroAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ZeroValue",
-    type: "error",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "stakeAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "stAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "amounts",
-        type: "uint256[]",
-      },
-    ],
-    name: "Deposit",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "implementation",
-        type: "address",
-      },
-    ],
-    name: "ImplementationUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "lzOracle",
-        type: "address",
-      },
-    ],
-    name: "LzOracleUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "OwnerUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: "PausedDepository",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "enum ProductType",
-        name: "productType",
-        type: "uint8",
-      },
-    ],
-    name: "ProductTypeUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
-      },
-    ],
-    name: "Retired",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "depositProcessors",
-        type: "address[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
-      },
-    ],
-    name: "SetDepositProcessorChainIds",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "chainId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "stakingProxy",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "stakeLimitPerSlots",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "numSlots",
-        type: "uint256",
-      },
-    ],
-    name: "StakingModelActivated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "chainId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "stakingProxy",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "enum StakingModelStatus",
-        name: "status",
-        type: "uint8",
-      },
-    ],
-    name: "StakingModelStatusSet",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "treasury",
-        type: "address",
-      },
-    ],
-    name: "TreasuryUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [],
-    name: "UnpausedDepository",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint256[]",
-        name: "amounts",
-        type: "uint256[]",
-      },
-    ],
-    name: "Unstake",
-    type: "event",
-  },
-  {
-    inputs: [],
+    type: "function",
     name: "ALPHA_DEPOSIT_LIMIT",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "BETA_DEPOSIT_LIMIT",
     outputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "BETA_DEPOSIT_LIMIT",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "LzCloseStakingModel",
     inputs: [
       {
-        internalType: "uint256",
         name: "chainId",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "address",
         name: "stakingProxy",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "LzCloseStakingModel",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "LzCreateAndActivateStakingModel",
     inputs: [
       {
-        internalType: "uint256",
         name: "chainId",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "address",
         name: "stakingProxy",
         type: "address",
+        internalType: "address",
       },
       {
-        internalType: "uint256",
         name: "stakeLimitPerSlot",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "uint256",
         name: "numSlots",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
-    name: "LzCreateAndActivateStakingModel",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "PROXY_SLOT",
+    inputs: [],
     outputs: [
       {
-        internalType: "bytes32",
         name: "",
         type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "STAKE",
+    inputs: [],
     outputs: [
       {
-        internalType: "bytes32",
         name: "",
         type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "UNSTAKE",
+    inputs: [],
     outputs: [
       {
-        internalType: "bytes32",
         name: "",
         type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "UNSTAKE_RETIRED",
+    inputs: [],
     outputs: [
       {
-        internalType: "bytes32",
         name: "",
         type: "bytes32",
+        internalType: "bytes32",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "VERSION",
+    inputs: [],
     outputs: [
       {
-        internalType: "string",
         name: "",
         type: "string",
+        internalType: "string",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeImplementation",
     inputs: [
       {
-        internalType: "address",
         name: "newImplementation",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "changeImplementation",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeLzOracle",
     inputs: [
       {
-        internalType: "address",
         name: "newLzOracle",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "changeLzOracle",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeOwner",
     inputs: [
       {
-        internalType: "address",
         name: "newOwner",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "changeOwner",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeProductType",
     inputs: [
       {
-        internalType: "enum ProductType",
         name: "newProductType",
         type: "uint8",
+        internalType: "enum ProductType",
       },
     ],
-    name: "changeProductType",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeTreasury",
     inputs: [
       {
-        internalType: "address",
         name: "newTreasury",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "changeTreasury",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256[]",
-        name: "chainIds",
-        type: "uint256[]",
-      },
-      {
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
-      },
-    ],
+    type: "function",
     name: "closeRetiredStakingModels",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
-        internalType: "address[]",
         name: "stakingProxies",
         type: "address[]",
+        internalType: "address[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "createAndActivateStakingModels",
+    inputs: [
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
-        internalType: "uint256[]",
+        name: "stakingProxies",
+        type: "address[]",
+        internalType: "address[]",
+      },
+      {
         name: "stakeLimitPerSlots",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
-        internalType: "uint256[]",
         name: "numSlots",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
-    name: "createAndActivateStakingModels",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "deposit",
     inputs: [
       {
-        internalType: "uint256",
         name: "stakeAmount",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
-        internalType: "address[]",
         name: "stakingProxies",
         type: "address[]",
+        internalType: "address[]",
       },
       {
-        internalType: "bytes[]",
         name: "bridgePayloads",
         type: "bytes[]",
+        internalType: "bytes[]",
       },
       {
-        internalType: "uint256[]",
         name: "values",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
-    name: "deposit",
     outputs: [
       {
-        internalType: "uint256",
         name: "stAmount",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "uint256[]",
         name: "amounts",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
     stateMutability: "payable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "depositExternal",
     inputs: [
       {
-        internalType: "uint256",
+        name: "chainIds",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "bridgePayloads",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
+      {
+        name: "values",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "drain",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "getChainIdAndStakingProxy",
+    inputs: [
+      {
         name: "stakingModelId",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
-    name: "getChainIdAndStakingProxy",
     outputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "pure",
-    type: "function",
   },
   {
-    inputs: [],
-    name: "getNumStakingModels",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
-  },
-  {
-    inputs: [],
-    name: "getSetStakingModelIds",
-    outputs: [
-      {
-        internalType: "uint256[]",
-        name: "",
-        type: "uint256[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
+    name: "getStakingModelId",
     inputs: [
       {
-        internalType: "uint256",
         name: "chainId",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "address",
         name: "stakingProxy",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "getStakingModelId",
     outputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "pure",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "initialize",
+    inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "lzOracle",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
+    type: "function",
     name: "mapAccountDeposits",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
     outputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
+    type: "function",
     name: "mapAccountWithdraws",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "mapChainIdDepositProcessors",
-    outputs: [
-      {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "mapChainIdDepositProcessors",
     inputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
-    name: "mapStakingModels",
     outputs: [
       {
-        internalType: "uint96",
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "mapChainIdStakedExternals",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "mapStakingModels",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
         name: "supply",
         type: "uint96",
+        internalType: "uint96",
       },
       {
-        internalType: "uint96",
         name: "remainder",
         type: "uint96",
+        internalType: "uint96",
       },
       {
-        internalType: "uint96",
         name: "stakeLimitPerSlot",
         type: "uint96",
+        internalType: "uint96",
       },
       {
-        internalType: "enum StakingModelStatus",
         name: "status",
         type: "uint8",
+        internalType: "enum StakingModelStatus",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "olas",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "owner",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "pause",
+    inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "paused",
+    inputs: [],
     outputs: [
       {
-        internalType: "bool",
         name: "",
-        type: "bool",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "productType",
+    inputs: [],
     outputs: [
       {
-        internalType: "enum ProductType",
         name: "",
         type: "uint8",
+        internalType: "enum ProductType",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "setDepositProcessorChainIds",
     inputs: [
       {
-        internalType: "address[]",
         name: "depositProcessors",
         type: "address[]",
+        internalType: "address[]",
       },
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
-    name: "setDepositProcessorChainIds",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "setStakingModelIds",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
-  },
-  {
+    name: "setExternalStakingDistributorChainIds",
     inputs: [
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
+        name: "externalStakingDistributors",
+        type: "address[]",
         internalType: "address[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setStakingModelStatuses",
+    inputs: [
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
         name: "stakingProxies",
         type: "address[]",
+        internalType: "address[]",
       },
       {
-        internalType: "enum StakingModelStatus[]",
         name: "statuses",
         type: "uint8[]",
+        internalType: "enum StakingModelStatus[]",
       },
     ],
-    name: "setStakingModelStatuses",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "st",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "treasury",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
+        internalType: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "unpause",
+    inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "unstake",
     inputs: [
       {
-        internalType: "uint256",
         name: "unstakeAmount",
         type: "uint256",
+        internalType: "uint256",
       },
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
-        internalType: "address[]",
         name: "stakingProxies",
         type: "address[]",
+        internalType: "address[]",
       },
       {
-        internalType: "bytes[]",
         name: "bridgePayloads",
         type: "bytes[]",
+        internalType: "bytes[]",
       },
       {
-        internalType: "uint256[]",
         name: "values",
         type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "sender",
+        type: "address",
+        internalType: "address",
       },
     ],
-    name: "unstake",
     outputs: [
       {
-        internalType: "uint256[]",
         name: "amounts",
         type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
     stateMutability: "payable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "unstakeExternal",
     inputs: [
       {
-        internalType: "uint256[]",
         name: "chainIds",
         type: "uint256[]",
-      },
-      {
-        internalType: "address[]",
-        name: "stakingProxies",
-        type: "address[]",
-      },
-      {
-        internalType: "bytes[]",
-        name: "bridgePayloads",
-        type: "bytes[]",
-      },
-      {
         internalType: "uint256[]",
-        name: "values",
-        type: "uint256[]",
       },
-    ],
-    name: "unstakeRetired",
-    outputs: [
       {
-        internalType: "uint256[]",
         name: "amounts",
         type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "bridgePayloads",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
+      {
+        name: "values",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "sender",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "unstakeRetired",
+    inputs: [
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "stakingProxies",
+        type: "address[]",
+        internalType: "address[]",
+      },
+      {
+        name: "bridgePayloads",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
+      {
+        name: "values",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    outputs: [
+      {
+        name: "amounts",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
     stateMutability: "payable",
-    type: "function",
+  },
+  {
+    type: "event",
+    name: "Deposit",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "stakeAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "stAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "stakingProxies",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "DepositExternal",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "externalStakingDistributors",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "DepositoryPaused",
+    inputs: [],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "DepositoryUnpaused",
+    inputs: [],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Drained",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "receiver",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ImplementationUpdated",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LzOracleUpdated",
+    inputs: [
+      {
+        name: "lzOracle",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "OwnerUpdated",
+    inputs: [
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ProductTypeUpdated",
+    inputs: [
+      {
+        name: "productType",
+        type: "uint8",
+        indexed: false,
+        internalType: "enum ProductType",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Retired",
+    inputs: [
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "stakingProxies",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "SetDepositProcessorChainIds",
+    inputs: [
+      {
+        name: "depositProcessors",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "SetExternalStakingDistributorChainIds",
+    inputs: [
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "externalStakingDistributors",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "StakingModelActivated",
+    inputs: [
+      {
+        name: "chainId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "stakingProxy",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "stakeLimitPerSlots",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "numSlots",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "StakingModelStatusSet",
+    inputs: [
+      {
+        name: "chainId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "stakingProxy",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "status",
+        type: "uint8",
+        indexed: false,
+        internalType: "enum StakingModelStatus",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "TreasuryUpdated",
+    inputs: [
+      {
+        name: "treasury",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Unstake",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "stakingProxies",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "UnstakeExternal",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "chainIds",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "externalStakingDistributors",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+      {
+        name: "operation",
+        type: "bytes32",
+        indexed: false,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ValueRefunded",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "refund",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "success",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "error",
+    name: "AlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "Overflow",
+    inputs: [
+      {
+        name: "provided",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "max",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "OwnerOnly",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "owner",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "Paused",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ProductTypeDepositOverflow",
+    inputs: [
+      {
+        name: "productType",
+        type: "uint8",
+        internalType: "uint8",
+      },
+      {
+        name: "depositAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ReentrancyGuard",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "StakingModelAlreadyExists",
+    inputs: [
+      {
+        name: "stakingModelId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "from",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "to",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "UnauthorizedAccount",
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "WrongArrayLength",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "WrongStakingModel",
+    inputs: [
+      {
+        name: "stakingModelId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ZeroAddress",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ZeroValue",
+    inputs: [],
   },
 ] as const;
