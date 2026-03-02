@@ -24,10 +24,6 @@ export const modal = createAppKit({
   networks,
   metadata,
   themeMode: "dark",
-  themeVariables: {
-    "--w3m-accent": "#364DED",
-    "--w3m-border-radius-master": "1px",
-  },
 });
 
 const ReownAppKitProvider = ({ children }: { children: ReactNode }) => {
