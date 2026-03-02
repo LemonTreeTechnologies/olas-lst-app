@@ -11,10 +11,10 @@ export const queryClient = new QueryClient();
 
 // Set up metadata
 const metadata = {
-  name: "next-reown-appkit",
-  description: "next-reown-appkit",
-  url: "https://github.com/0xonerb/next-reown-appkit-ssr", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/179229932"],
+  name: "stOLAS",
+  description: "OLAS LST - liquid staking solution for the OLAS token.",
+  url: "https://lstolas.xyz",
+  icons: ["https://lstolas.xyz/images/stOLAS-icon.svg"],
 };
 
 // Create the modal
